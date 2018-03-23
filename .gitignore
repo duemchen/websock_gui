@@ -1,0 +1,27 @@
+﻿# Ordner die Ausgelassen werden sollen
+RemoteSystemsTempFiles/
+.externalToolBuilders/
+.metadata/
+.recommenders/**
+.settings/
+bin/
+tmp/
+**.svn/
+**build/
+**classes/
+**/target/
+
+# Dateitypen die Ausgelassen werden sollen
+.classpath
+*.class
+
+**.orig
+**.lnk
+**.log
+
+# Dateien im Wurzelverzeichnis auslassen
+/*.rar
+/*.zip
+/*.tar
+/*.tar.gz
+/*.ini
