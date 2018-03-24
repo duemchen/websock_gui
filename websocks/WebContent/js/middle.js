@@ -1,6 +1,45 @@
 $(document)
 		.ready(
 				function() {
+					// relativ zur aufrufenden URL den WebSocket berechnen
+					var loc = window.location, new_uri;
+					if (loc.protocol === "https:") {
+						new_uri = "wss:";
+					} else {
+						new_uri = "ws:";
+					}
+					new_uri += "//" + loc.host;
+					new_uri += loc.pathname + "/ws";
+					//console.log('wsUrl', new_uri);
+
+					ws = new WebSocket(new_uri);
+					ws.onopen = function() {
+						$('#xwsmessage').html('websocket is connected.');
+					};
+
+					// reines json. Kennung cmd als Sprungverteiler
+					ws.onmessage = function(evt) {
+						var msg = evt.data;
+						console.log("Message received roh: " + msg);
+						var o = JSON.parse(msg);
+						console.log("Message received:" + JSON.stringify(o));
+						console.log("cmd:" + JSON.stringify(o.cmd));
+						if (o.cmd == 'kunden') {
+							var kunden = o.kunden;
+							console.log('Wskunden', kunden);
+							$('#xwsmessage').html(JSON.stringify(kunden));
+							fillKunden(kunden);
+						}
+						if (o.cmd == 'positionen') {
+							fillDiagramme(o);
+						}
+
+					};
+					ws.onclose = function() {
+						$('#xwsmessage').html('websocket is closed.');
+					};
+
+					
 					$('#btndel').prop("disabled", true);
 					$("#btndel").click(
 							function() {
@@ -89,7 +128,7 @@ $(document)
 					});
 					ziel = 'simago/compass/';
 					joy = ziel.replace('compass', 'joy');
-					MQTTconnect();
+					// MQTTconnect();
 					navigator.vibrate = navigator.vibrate
 							|| navigator.webkitVibrate || navigator.mozVibrate
 							|| navigator.msVibrate;
@@ -171,16 +210,16 @@ function startFillDiagramme(zielid) {
 		cmd : 'positionen',
 		zielid : zielid
 	};
-	// console.log('o', JSON.stringify(o));
+	console.log('startFillDiagramme', JSON.stringify(o));
 	sendMessage(o);
 }
 
 function fillDiagramme(data) {
-	console.log(data);
+	console.log('fillDiagramme', data);
 	var jo = data;
 	console.log('jo', JSON.stringify(jo));
-	drawChartjsonY(jo.y);
 	drawChartjsonX(jo.x);
+	drawChartjsonY(jo.y);
 	drawChartjsonZ(jo.z)
 	drawChartjsonA(jo.a)
 
