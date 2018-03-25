@@ -16,6 +16,8 @@ import org.json.JSONObject;
 
 public class Subcriber implements MqttListener {
 
+	// @EJB private DBSession dbsession;
+
 	@Inject
 	private Test test;
 
@@ -24,8 +26,7 @@ public class Subcriber implements MqttListener {
 
 	@PostConstruct
 	private void init() {
-		System.out.println(
-				"deploy app Subcriber +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("deploy app Subcriber +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		mq.registerMqttListener(this);
 		mq.subscribe("simago/system"); //
 		// mq.subscribe("simago/command");
@@ -64,9 +65,16 @@ public class Subcriber implements MqttListener {
 	public void onMessage(String topic, MqttMessage mm) {
 		if (mm != null) {
 			byte[] b = mm.getPayload();
-			// System.out.println("subscriber msg: " + new String(b));
+			System.out.println("subscriber msg: " + new String(b) + ", topic: " + topic);
 			// hier jetzt regeln.
 			// Datenbankzugriff, senden CMD, info an Webanwendung
+			// System.out.println(dbsession.getKundenSpiegelZiele());
+			/**
+			 * topic zu regler (oder anderem: Joystick topic zu MAC zu ID ID +
+			 * Sonnenstand + Formel = Sollstellung Joy Kommando
+			 * 
+			 * 
+			 */
 		}
 	}
 

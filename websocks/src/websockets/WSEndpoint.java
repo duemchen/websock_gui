@@ -45,14 +45,9 @@ public class WSEndpoint {
 
 	@OnOpen
 	public void open(Session session) throws IOException, EncodeException {
-
 		// log.info("Open Websession:" + session.getId());
 		JSONObject data = bean.getAllData();
-
 		session.getBasicRemote().sendText(data.toString());
-		// session.getBasicRemote().sendObject);(data);
-		// TODO hier jetzt aus DB alle json daten senden, topic sprungverteiler
-		// {topic:'kunden',data: {}}
 	}
 
 	@OnClose
