@@ -5,13 +5,15 @@
  */
 package service;
 
+import java.io.IOException;
+
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 /**
  *
  * @author duemchen
  */
-interface MqttListener {
+public interface MqttListener {
 
-    public void onMessage(String topic, MqttMessage message);
+	public void onMessage(String topic, MqttMessage message) throws IOException;
 }

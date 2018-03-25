@@ -8,12 +8,13 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.inject.Inject;
 
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONObject;
 
 @Startup
 @Singleton
 
-public class Subcriber {
+public class Subcriber implements MqttListener {
 
 	@Inject
 	private Test test;
@@ -25,14 +26,20 @@ public class Subcriber {
 	private void init() {
 		System.out.println(
 				"deploy app Subcriber +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-		mq.subscribe("simago/system");
-		mq.subscribe("simago/command");
+		mq.registerMqttListener(this);
+		mq.subscribe("simago/system"); //
+		// mq.subscribe("simago/command");
+		mq.subscribe("simago/zustand");
+		mq.subscribe("simago/compass/#");
+		System.out.println("suscibe ok");
+
 		// mq.subscibe("simago/compass/#");
 		mq.sendMqtt("simago/system", "Hallo Welt " + new Date());
+		System.out.println("send ok");
 
 		JSONObject jo = new JSONObject();
 		jo.put("name", "Duemchen");
-		System.out.println(jo);
+		System.out.println("jo " + jo);
 		test.doit();
 
 		// db.setMqtt(mq);
@@ -44,12 +51,23 @@ public class Subcriber {
 	private void cleanUp() {
 		mq.unSubscribe("simago/system");
 		mq.unSubscribe("simago/command");
+		mq.unSubscribe("simago/compass/#");
 		System.out.println(
 				"undeploy app Subcriber +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 	}
 
 	public Subcriber() {
-		System.out.println("+++++unnötig+++++++++");
+		System.out.println("+++++unnÃ¶tig+++++++++");
+	}
+
+	@Override
+	public void onMessage(String topic, MqttMessage mm) {
+		if (mm != null) {
+			byte[] b = mm.getPayload();
+			// System.out.println("subscriber msg: " + new String(b));
+			// hier jetzt regeln.
+			// Datenbankzugriff, senden CMD, info an Webanwendung
+		}
 	}
 
 }

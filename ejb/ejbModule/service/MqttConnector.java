@@ -5,6 +5,7 @@
  */
 package service;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -30,8 +31,11 @@ import org.json.JSONObject;
 @ApplicationScoped
 public class MqttConnector implements MqttCallback {
 
-	private String MQTTLINK = "duemchen.feste-ip.net:56686";
-	private MqttClient client;
+	private String MQTTLINK = "192.168.10.51:1883";
+	// REASON_CODE_INVALID_MESSAGE 32108=Paket nicht erkannt
+	// private String MQTTLINK = "duemchen.feste-ip.net:56686";
+	// private String MQTTLINK = "duemchen.feste-ip.net:49893";
+	private MqttClient client = null;
 
 	private List<MqttListener> listeners = new ArrayList<MqttListener>();
 
@@ -56,7 +60,14 @@ public class MqttConnector implements MqttCallback {
 	protected void notifyMqttListeners(String topic, MqttMessage message) {
 
 		// Notify each of the listeners in the list of registered listeners
-		this.listeners.forEach(listener -> listener.onMessage(topic, message));
+		this.listeners.forEach(listener -> {
+			try {
+				listener.onMessage(topic, message);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		});
 
 	}
 
@@ -79,7 +90,8 @@ public class MqttConnector implements MqttCallback {
 					MemoryPersistence persistence = new MemoryPersistence();
 					SecureRandom random = new SecureRandom();
 					String id = new BigInteger(60, random).toString(32);
-					client = new MqttClient("tcp://" + MQTTLINK, "MQTTCONN-" + id, persistence);
+					String link = "tcp://" + MQTTLINK;
+					client = new MqttClient(link, "MQTTCONN-" + id, persistence);
 					System.out.println(" totwait" + client.getTimeToWait());
 
 				}
@@ -115,7 +127,8 @@ public class MqttConnector implements MqttCallback {
 				MemoryPersistence persistence = new MemoryPersistence();
 				SecureRandom random = new SecureRandom();
 				String id = new BigInteger(60, random).toString(32);
-				client = new MqttClient("tcp://" + MQTTLINK, "MQTTCONN-" + id, persistence);
+				String link = "tcp://" + MQTTLINK;
+				client = new MqttClient(link, "MQTTCONN-" + id, persistence);
 			}
 			if (!client.isConnected()) {
 				client.connect();
@@ -125,6 +138,7 @@ public class MqttConnector implements MqttCallback {
 			return true;
 
 		} catch (Exception e) {
+			System.out.println(e);
 		}
 		return false;
 	}
@@ -154,13 +168,14 @@ public class MqttConnector implements MqttCallback {
 
 	@Override
 	public void messageArrived(String topic, MqttMessage message) throws Exception {
-		System.out.println("messageArrived from: " + topic + ", message: " + message);
+		// System.out.println("messageArrived from: " + topic + ", message: " +
+		// message);
 		notifyMqttListeners(topic, message);
 	}
 
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken token) {
-		// System.out.println("deliveryComplete: " + token);
+		System.out.println("deliveryComplete: " + token);
 	}
 
 }

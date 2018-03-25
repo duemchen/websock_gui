@@ -16,13 +16,9 @@ public class Bean {
 	private DBSession dbsession;
 
 	public Kunde getKunde(int id) {
-
-		System.out.println("getkunde");
-		System.out.println("dbSession=" + dbsession);
 		if (null != dbsession)
 			return dbsession.getKunde(id);
 		return null;
-
 	}
 
 	public JSONObject getAllData() {
@@ -34,7 +30,7 @@ public class Bean {
 	}
 
 	public Bean() {
-		System.out.println(" create bean");
+		// System.out.println(" create bean");
 	}
 
 }

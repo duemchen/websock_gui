@@ -45,7 +45,8 @@ public class WSEndpoint {
 
 	@OnOpen
 	public void open(Session session) throws IOException, EncodeException {
-		log.info("Open session:" + session.getId());
+
+		// log.info("Open Websession:" + session.getId());
 		JSONObject data = bean.getAllData();
 
 		session.getBasicRemote().sendText(data.toString());
@@ -56,7 +57,7 @@ public class WSEndpoint {
 
 	@OnClose
 	public void close(Session session, CloseReason c) {
-		log.info("Closing:" + session.getId());
+		// log.info("Closing WebSession:" + session.getId());
 		this.session = null;
 	}
 

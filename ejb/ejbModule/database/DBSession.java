@@ -25,7 +25,7 @@ public class DBSession {
 	}
 
 	public DBSession() {
-		System.out.println("create DBSession");
+		// System.out.println("create DBSession");
 	}
 
 	public JSONObject getKundenSpiegelZiele() {
