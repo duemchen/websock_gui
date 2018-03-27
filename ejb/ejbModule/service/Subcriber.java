@@ -11,7 +11,7 @@ import javax.inject.Inject;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import database.DBSession2;
+import database.DBSessionRegler;
 
 @Startup
 @Singleton
@@ -20,7 +20,7 @@ import database.DBSession2;
 public class Subcriber implements MqttListener {
 
 	@Inject
-	private DBSession2 dbSession;
+	private DBSessionRegler dbSession;
 
 	@Inject
 	private MqttConnector mq;

@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import service.SunPos;
 
 @Stateless
-public class DBSession {
+public class DBSessionWeb {
 
 	@PersistenceContext
 	EntityManager em;
@@ -24,7 +24,7 @@ public class DBSession {
 
 	}
 
-	public DBSession() {
+	public DBSessionWeb() {
 		// System.out.println("create DBSession");
 	}
 

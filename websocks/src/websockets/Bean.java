@@ -5,7 +5,7 @@ import javax.enterprise.context.RequestScoped;
 
 import org.json.JSONObject;
 
-import database.DBSession;
+import database.DBSessionWeb;
 import database.Kunde;
 
 @RequestScoped
@@ -13,7 +13,7 @@ import database.Kunde;
 public class Bean {
 
 	@EJB
-	private DBSession dbsession;
+	private DBSessionWeb dbsession;
 
 	public Kunde getKunde(int id) {
 		if (null != dbsession)

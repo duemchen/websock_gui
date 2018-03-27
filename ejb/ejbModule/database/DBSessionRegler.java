@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import service.SunPos;
 
 @ApplicationScoped
-public class DBSession2 {
+public class DBSessionRegler {
 
 	@PersistenceContext
 	EntityManager em;
@@ -24,7 +24,7 @@ public class DBSession2 {
 
 	}
 
-	public DBSession2() {
+	public DBSessionRegler() {
 		// System.out.println("create DBSession");
 	}
 
