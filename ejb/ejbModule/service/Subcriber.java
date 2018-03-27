@@ -6,46 +6,38 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.json.JSONObject;
+
+import database.DBSession2;
 
 @Startup
 @Singleton
+@ApplicationScoped
 
 public class Subcriber implements MqttListener {
 
-	// @EJB private DBSession dbsession;
-
 	@Inject
-	private Test test;
+	private DBSession2 dbSession;
 
 	@Inject
 	private MqttConnector mq;
 
 	@PostConstruct
 	private void init() {
-		System.out.println("deploy app Subcriber +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("init Subcriber ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		mq.registerMqttListener(this);
 		mq.subscribe("simago/system"); //
 		// mq.subscribe("simago/command");
 		mq.subscribe("simago/zustand");
 		mq.subscribe("simago/compass/#");
-		System.out.println("suscibe ok");
+		System.out.println("subscibe ok");
 
 		// mq.subscibe("simago/compass/#");
-		mq.sendMqtt("simago/system", "Hallo Welt " + new Date());
+		mq.sendMqtt("simago/system", "Hallo Welt, MQTT " + new Date());
 		System.out.println("send ok");
-
-		JSONObject jo = new JSONObject();
-		jo.put("name", "Duemchen");
-		System.out.println("jo " + jo);
-		test.doit();
-
-		// db.setMqtt(mq);
-		// mq.registerMqttListener(db);
-
 	}
 
 	@PreDestroy
@@ -53,12 +45,11 @@ public class Subcriber implements MqttListener {
 		mq.unSubscribe("simago/system");
 		mq.unSubscribe("simago/command");
 		mq.unSubscribe("simago/compass/#");
-		System.out.println(
-				"undeploy app Subcriber +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		System.out.println("cleanUp Subcriber +++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 	}
 
 	public Subcriber() {
-		System.out.println("+++++unnötig+++++++++");
+		// System.out.println("+++++unnötig+++++++++");
 	}
 
 	@Override
@@ -68,7 +59,7 @@ public class Subcriber implements MqttListener {
 			System.out.println("subscriber msg: " + new String(b) + ", topic: " + topic);
 			// hier jetzt regeln.
 			// Datenbankzugriff, senden CMD, info an Webanwendung
-			// System.out.println(dbsession.getKundenSpiegelZiele());
+			System.out.println(dbSession.getKundenSpiegelZiele());
 			/**
 			 * topic zu regler (oder anderem: Joystick topic zu MAC zu ID ID +
 			 * Sonnenstand + Formel = Sollstellung Joy Kommando

@@ -15,8 +15,6 @@ import javax.websocket.server.ServerEndpoint;
 import org.jboss.logging.Logger;
 import org.json.JSONObject;
 
-import service.MqttConnector;
-
 @Stateful
 @ServerEndpoint("/ws")
 public class WSEndpoint {
@@ -25,8 +23,7 @@ public class WSEndpoint {
 	@Inject
 	private Bean bean;
 
-	@Inject
-	MqttConnector mq;
+	// @Inject MqttConnector mq;
 
 	private Session session = null;
 
@@ -40,7 +37,7 @@ public class WSEndpoint {
 			return bean.getPositions(o.getInt("zielid")).toString();
 		}
 
-		return "unbekannt";
+		return "unbekannte Client-Meldung am Websocket empfangen. #####################################################";
 	}
 
 	@OnOpen

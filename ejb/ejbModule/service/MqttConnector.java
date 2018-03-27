@@ -40,6 +40,7 @@ public class MqttConnector implements MqttCallback {
 	private List<MqttListener> listeners = new ArrayList<MqttListener>();
 
 	public MqttConnector() {
+		System.out.println("create MqttConnector");
 
 	}
 
@@ -117,6 +118,7 @@ public class MqttConnector implements MqttCallback {
 			}
 
 		} catch (JSONException ex) {
+			Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
 		}
 
 	}
