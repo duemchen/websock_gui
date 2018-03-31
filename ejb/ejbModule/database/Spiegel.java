@@ -30,7 +30,6 @@ public class Spiegel implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "KUNDENID", nullable = false)
 	private Kunde kunde;
-
 	@Column(name = "NAME", length = 50, nullable = false)
 	private String name;
 	@Column(name = "MAC", length = 20, nullable = false)
@@ -47,6 +46,7 @@ public class Spiegel implements Serializable {
 	double wind; // deaktiv wegen wind
 	double wolke; // deaktiv wegen wolken
 	double ruhe; // deaktiv wegen Nacht oder Sonne zu niedrig
+	Double ziel; // das eingestellte Ziel muss evtl. woanders hin
 
 	public Kunde getKunde() {
 		return kunde;
@@ -142,6 +142,14 @@ public class Spiegel implements Serializable {
 
 	public void setRuhe(double ruhe) {
 		this.ruhe = ruhe;
+	}
+
+	public Double getZiel() {
+		return ziel;
+	}
+
+	public void setZiel(Double ziel) {
+		this.ziel = ziel;
 	}
 
 	public Long getId() {

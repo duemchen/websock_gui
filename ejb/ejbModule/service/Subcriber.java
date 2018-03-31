@@ -1,17 +1,22 @@
 package service;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
+import javax.enterprise.concurrent.ManagedThreadFactory;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONObject;
 
 import database.DBSessionRegler;
+import de.horatio.common.HoraTime;
 
 @Startup
 @Singleton
@@ -19,11 +24,18 @@ import database.DBSessionRegler;
 
 public class Subcriber implements MqttListener {
 
+	final long abstand = 5 * HoraTime.C1SEKUNDE;
+
 	@Inject
 	private DBSessionRegler dbSession;
 
 	@Inject
 	private MqttConnector mq;
+
+	@Resource(lookup = "java:jboss/ee/concurrency/factory/MyManagedThreadFactory")
+	private ManagedThreadFactory threadFactory;
+
+	HashMap<String, Date> lastCall = new HashMap<String, Date>();
 
 	@PostConstruct
 	private void init() {
@@ -56,17 +68,43 @@ public class Subcriber implements MqttListener {
 	public void onMessage(String topic, MqttMessage mm) {
 		if (mm != null) {
 			byte[] b = mm.getPayload();
-			System.out.println("subscriber msg: " + new String(b) + ", topic: " + topic);
-			// hier jetzt regeln.
-			// Datenbankzugriff, senden CMD, info an Webanwendung
-			System.out.println(dbSession.getKundenSpiegelZiele());
-			/**
-			 * topic zu regler (oder anderem: Joystick topic zu MAC zu ID ID +
-			 * Sonnenstand + Formel = Sollstellung Joy Kommando
-			 * 
-			 * 
-			 */
+			try {
+				JSONObject istPosition = new JSONObject(new String(b));
+				// System.out.println("subscriber msg: " + new String(b) + ",
+				// topic:
+				// " + topic);
+				String mac = topicToMac(topic);
+				// nur alle x sek stellen. in einer Liste das nächste datum
+				if (!isTime(mac))
+					return;
+				Controller r = new Controller(mac, istPosition, dbSession, mq);
+				Thread thread = threadFactory.newThread(r);
+				thread.start();
+			} catch (Exception e) {
+				System.out.println("nojson");
+			}
+
 		}
+	}
+
+	private boolean isTime(String mac) {
+		Date next = lastCall.get(mac);
+		if (next == null) {
+			next = new Date();
+			lastCall.put(mac, next);
+		}
+		Date now = new Date();
+		boolean result = now.after(next);
+		if (result) {
+			next.setTime(now.getTime() + abstand);
+			lastCall.put(mac, next);
+		}
+		return result;
+	}
+
+	private String topicToMac(String topic) {
+		String result = topic.replaceFirst("simago/compass/", "");
+		return result;
 	}
 
 }

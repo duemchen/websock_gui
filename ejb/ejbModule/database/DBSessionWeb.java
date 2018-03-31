@@ -8,9 +8,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import kurven.KurvenFormel;
 import service.SunPos;
 
 @Stateless
@@ -83,8 +85,12 @@ public class DBSessionWeb {
 		List<Position> list = q.getResultList();
 		// Sonnenstand zu Zielstand darstellen. Müsste ja rein linear sein.
 		// Dazu die Sonnenformel
-		// 2 Diagramme: x, y
 		SunPos sp = new SunPos();
+
+		PolynomialFunction fAzimuth = KurvenFormel.getKurveAzimuth(list, sp);
+		PolynomialFunction fZenith = KurvenFormel.getKurveZenith(list, sp);
+
+		//
 		JSONArray jx = new JSONArray();
 		JSONArray jy = new JSONArray();
 		JSONArray jz = new JSONArray();
@@ -96,6 +102,7 @@ public class DBSessionWeb {
 			JSONObject jo = new JSONObject();
 			jo.put("X", sp.getAzimuth(d));
 			jo.put("x", pos.getX180());
+			jo.put("xx", fAzimuth.value(sp.getAzimuth(d)));
 			jo.put("id", pos.getId());
 			jx.put(jo);
 			//
@@ -119,6 +126,7 @@ public class DBSessionWeb {
 			a = Math.toDegrees(a);
 			a = Math.round(100.0 * a) / 100.0;
 			jaa.put("a", a);
+			jaa.put("aa", fZenith.value(sp.getZenith(d)));
 			jaa.put("id", pos.getId());
 			ja.put(jaa);
 

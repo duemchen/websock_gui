@@ -1,6 +1,5 @@
 package database;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -10,8 +9,6 @@ import javax.persistence.Query;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import service.SunPos;
 
 @ApplicationScoped
 public class DBSessionRegler {
@@ -75,87 +72,27 @@ public class DBSessionRegler {
 		return result;
 	}
 
-	public JSONObject getPositions(int zielid) {
+	public List<Position> getPositionsList(int zielid) {
 
 		Query q = em.createQuery("select p from Position as p where p.loesch=False and p.ziel=:ZIEL");
 		Ziel ziel = getZiel(zielid);
 		q.setParameter("ZIEL", ziel);
-		List<Position> list = q.getResultList();
-		// Sonnenstand zu Zielstand darstellen. Müsste ja rein linear sein.
-		// Dazu die Sonnenformel
-		// 2 Diagramme: x, y
-		SunPos sp = new SunPos();
-		JSONArray jx = new JSONArray();
-		JSONArray jy = new JSONArray();
-		JSONArray jz = new JSONArray();
-		JSONArray ja = new JSONArray();
-
-		for (Position pos : list) {
-			Date d = pos.getDatum();
-			// sp.printSonnenstand(d);
-			JSONObject jo = new JSONObject();
-			jo.put("X", sp.getAzimuth(d));
-			jo.put("x", pos.getX180());
-			jo.put("id", pos.getId());
-			jx.put(jo);
-			//
-			JSONObject joo = new JSONObject();
-			joo.put("Y", sp.getZenith(d));
-			joo.put("y", pos.getY() * -1);
-			joo.put("id", pos.getId());
-			jy.put(joo);
-
-			JSONObject jooo = new JSONObject();
-			jooo.put("X", sp.getAzimuth(d));
-			jooo.put("z", pos.getZ());
-			jooo.put("id", pos.getId());
-			jz.put(jooo);
-
-			JSONObject jaa = new JSONObject();
-			jaa.put("Y", sp.getZenith(d));
-			// Projektion auf die xz Ebene
-			double a;
-			a = Math.asin(Math.sin(Math.toRadians(-pos.getY())) * Math.cos(Math.toRadians(Math.PI * pos.getZ())));
-			a = Math.toDegrees(a);
-			a = Math.round(100.0 * a) / 100.0;
-			jaa.put("a", a);
-			jaa.put("id", pos.getId());
-			ja.put(jaa);
-
-			// TODO dateformat mit rein. Ziel: Punkt markieren und in den Kurven
-			// anzeigen
-			// Xx yY Tagesverlauf XY
-		}
-
-		JSONObject j = new JSONObject();
-		j.put("cmd", "positionen");
-		j.put("x", jx);
-		j.put("y", jy);
-		j.put("z", jz);
-		j.put("a", ja);
-
-		// System.out.println("\n");
-		// sp.printSonnenstand(HoraTime.strToDateTime("24.03.2017 12:00"));
-		// sp.printSonnenstand(HoraTime.strToDateTime("25.03.2017 12:00"));
-		// //winterzeit
-		// sp.printSonnenstand(HoraTime.strToDateTime("26.03.2017 13:00"));
-		// //sommerzeit
-		// sp.printSonnenstand(HoraTime.strToDateTime("27.03.2017 13:00"));
-		// System.out.println("\n");
-		//
-		// sp.printSonnenstand(HoraTime.strToDateTime("24.03.2017 11:00"));
-		// sp.printSonnenstand(HoraTime.strToDateTime("24.03.2017 12:00"));
-		// sp.printSonnenstand(HoraTime.strToDateTime("24.03.2017 13:00"));
-		// System.out.println("\n");
-		// sp.printSonnenstand(HoraTime.strToDateTime("27.03.2017 11:00"));
-		// sp.printSonnenstand(HoraTime.strToDateTime("27.03.2017 12:00"));
-		// sp.printSonnenstand(HoraTime.strToDateTime("27.03.2017 13:00"));
-		// sp.printSonnenstand(HoraTime.strToDateTime("27.03.2017 14:00"));
-		return j;
+		List<Position> result = q.getResultList();
+		return result;
 	}
 
 	private Ziel getZiel(int zielid) {
 		return em.find(Ziel.class, new Long(zielid));
+	}
+
+	public Spiegel getSpiegelByMAC(String mac) {
+		Query q = em.createQuery("select s from Spiegel as s where s.mac=:MAC");
+		q.setParameter("MAC", mac);
+		List<Spiegel> list = q.getResultList();
+		for (Spiegel sp : list) {
+			return sp;
+		}
+		return null;
 	}
 
 }

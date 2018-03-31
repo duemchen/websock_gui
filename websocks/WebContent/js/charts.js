@@ -14,7 +14,7 @@ function drawChart() {
 	chartY = new google.visualization.ScatterChart($('#chart_y')[0]);
 	chartA = new google.visualization.ScatterChart($('#chart_a')[0]);
 
-	//Baustelle!
+	// Baustelle!
 	function selectHandler() {
 		var selectedItem = this.getSelection()[0];
 		if (selectedItem) {
@@ -37,7 +37,8 @@ function drawChart() {
 		}
 
 	}
-	//	google.visualization.events.addListener(chartA, 'select', selectHandler());
+	// google.visualization.events.addListener(chartA, 'select',
+	// selectHandler());
 
 }
 
@@ -45,9 +46,10 @@ function drawChartjsonX(x) {
 	var data = new google.visualization.DataTable();
 	data.addColumn('number', 'X');
 	data.addColumn('number', 'x');
+	data.addColumn('number', 'xx'); // die funktion
 	x.forEach(function(zeile, index) {
 		// console.log(zeile.X + '.+.' + zeile.x);
-		data.addRow([ zeile.X, zeile.x, ]);
+		data.addRow([ zeile.X, zeile.x, zeile.xx ]);
 	})
 
 	var options = {
@@ -64,12 +66,21 @@ function drawChartjsonX(x) {
 				type : 'linear', // exponential',
 				visibleInLegend : true,
 				color : 'purple',
-				lineWidth : 20,
+				lineWidth : 10,
 				opacity : 0.2,
 				showR2 : true,
 			}
-		}
-	// Draw a trendline for data series 0.
+		},
+		series : {
+			0 : {
+				color : '#43459d'
+			},
+			1 : {
+				color : '#f3459d'
+			},
+
+		},
+
 	};
 	chartX.draw(data, options);
 }
@@ -77,9 +88,9 @@ function drawChartjsonZ(z) {
 	var data = new google.visualization.DataTable();
 	data.addColumn('number', 'Y');
 	data.addColumn('number', 'z');
+	data.addColumn('number', 'zz');
 	z.forEach(function(zeile, index) {
-		// console.log(zeile.X + '.+.' + zeile.x);
-		data.addRow([ zeile.X, zeile.z, ]);
+		data.addRow([ zeile.X, zeile.z, 2 * zeile.z ]);
 	})
 
 	var options = {
@@ -99,9 +110,19 @@ function drawChartjsonZ(z) {
 				lineWidth : 20,
 				opacity : 0.2,
 				showR2 : true,
-			}
-		}
-	// Draw a trendline for data series 0.
+			},
+
+		},
+		series : {
+			0 : {
+				color : '#43459d'
+			},
+			1 : {
+				color : '#f3459d'
+			},
+
+		},
+
 	};
 	chartZ.draw(data, options);
 }
@@ -144,10 +165,11 @@ function drawChartjsonA(a) {
 	var data = new google.visualization.DataTable();
 	data.addColumn('number', 'Sonne');
 	data.addColumn('number', 'Spiegel');
+	data.addColumn('number', 'Spiegel');
 	gIndextoId = [];
 	a.forEach(function(zeile, index) {
 		// console.log(zeile.X + '.+.' + zeile.x);
-		data.addRow([ zeile.Y, zeile.a, ]);
+		data.addRow([ zeile.Y, zeile.a, zeile.aa, ]);
 
 		gIndextoId.push(zeile.id);
 	})
@@ -170,7 +192,17 @@ function drawChartjsonA(a) {
 				opacity : 0.2,
 				showR2 : true,
 			}
-		}
+		},
+		series : {
+			0 : {
+				color : '#43459d'
+			},
+			1 : {
+				color : '#f3459d'
+			},
+
+		},
+
 	};
 
 	chartA.draw(data, options);

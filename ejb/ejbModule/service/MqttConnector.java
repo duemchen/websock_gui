@@ -22,7 +22,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  *
@@ -73,18 +72,16 @@ public class MqttConnector implements MqttCallback {
 	}
 
 	// ****************************
-	public synchronized void sendMqttPersist(String path, String data) {
+	public void sendMqttPersist(String path, String data) {
 		sendMqtt(path, data, true);
 	}
 
-	public synchronized void sendMqtt(String path, String data) {
+	public void sendMqtt(String path, String data) {
 		sendMqtt(path, data, false);
 	}
 
-	private synchronized void sendMqtt(String path, String data, boolean persist) {
+	private void sendMqtt(String path, String data, boolean persist) {
 		try {
-			JSONObject jo = new JSONObject();
-			jo.put("source", 0); // der Regler sendet das Kommando selbst
 
 			try {
 				if (client == null) {
@@ -114,11 +111,11 @@ public class MqttConnector implements MqttCallback {
 
 			} catch (MqttException ex) {
 				System.out.println(ex);
-				Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
+				Logger.getLogger(MqttConnector.class.getName()).log(Level.SEVERE, null, ex);
 			}
 
 		} catch (JSONException ex) {
-			Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(MqttConnector.class.getName()).log(Level.SEVERE, null, ex);
 		}
 
 	}
@@ -177,7 +174,7 @@ public class MqttConnector implements MqttCallback {
 
 	@Override
 	public void deliveryComplete(IMqttDeliveryToken token) {
-		System.out.println("deliveryComplete: " + token);
+		// System.out.println("deliveryComplete: " + token);
 	}
 
 }
