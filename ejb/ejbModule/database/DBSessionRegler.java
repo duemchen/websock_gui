@@ -95,6 +95,26 @@ public class DBSessionRegler {
 		return null;
 	}
 
+	public List<Spiegel> getSpiegelAll() {
+		Query q = em.createQuery("select s from Spiegel as s");
+		List<Spiegel> result = q.getResultList();
+		return result;
+	}
+
+	public void saveSpiegel(Spiegel s) {
+		updateObject(s);
+
+	}
+
+	public boolean updateObject(Object o) {
+		try {
+			em.merge(o);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
 }
 
 /*

@@ -11,10 +11,11 @@ package service;
  */
 public class TestSinus {
 
-    public static void main(String[] args) throws Exception {
-        double c = Math.asin(Math.sin(Math.toRadians(90)) * Math.cos(Math.toRadians(10)));
-        //System.out.println(c);
-        c = Math.toDegrees(c);
-        System.out.println(c);
-    }
+	public static void main(String[] args) throws Exception {
+		double c = Math.asin(Math.sin(Math.toRadians(90)) * Math.cos(Math.toRadians(10)));
+		// System.out.println(c);
+		c = Math.toDegrees(c);
+		System.out.println(c);
+	}
+
 }

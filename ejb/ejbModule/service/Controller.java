@@ -38,7 +38,7 @@ public class Controller implements Runnable {
 		HOCH, LINKS, RECHTS, RUNTER, NEUTRAL
 	}
 
-	private final String MQTTPATH = "simago/joy/";
+	private final String MQTTPATH = "simago/joy/xx-";
 
 	private String mac;
 	private DBSessionRegler dbSession;
@@ -118,8 +118,9 @@ public class Controller implements Runnable {
 		double ySoll = fZenith.value(y);
 		ySoll = Math.round(100.0 * ySoll) / 100.0;
 
-		System.out.println("Aktueller SOLL azimuth: " + xSoll + ", zenith: " + ySoll);
-		System.out.println("Aktueller IST AZ " + istPos.toStringAZ());
+		// System.out.println("Aktueller SOLL azimuth: " + xSoll + ", zenith: "
+		// + ySoll);
+		// System.out.println("Aktueller IST AZ " + istPos.toStringAZ());
 		CMD cmd = CMD.LINKS;
 		// erst x, dann y stellen.
 		cmd = getCmd(xSoll, ySoll, istPos.getX180(), istPos.getProjectionXy());
@@ -164,7 +165,7 @@ public class Controller implements Runnable {
 				}
 			}
 		}
-		System.out.println(result);
+		// System.out.println(result);
 		return result;
 	}
 
