@@ -26,7 +26,6 @@ import java.util.Random;
 import org.apache.commons.math3.analysis.ParametricUnivariateFunction;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.SimpleCurveFitter;
-import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
 
 import database.Position;
@@ -67,13 +66,13 @@ public class KurvenFormel {
 			System.out.print(d + ", ");
 		}
 		// funktion ausgeben
-		final PolynomialFunction fp = new PolynomialFunction(best);
-		List<WeightedObservedPoint> list = obs.toList();
-		for (WeightedObservedPoint p : list) {
-			// System.out.println("ERGEBNIS x: " + p.getX() + ", y: " + p.getY()
-			// + ", y': " + fp.value(p.getX()) + ", delta: " + (p.getY() -
-			// f.value(p.getX())));
-		}
+		// final PolynomialFunction fp = new PolynomialFunction(best);
+		// List<WeightedObservedPoint> list = obs.toList();
+		// for (WeightedObservedPoint p : list) {
+		// // System.out.println("ERGEBNIS x: " + p.getX() + ", y: " + p.getY()
+		// // + ", y': " + fp.value(p.getX()) + ", delta: " + (p.getY() -
+		// // f.value(p.getX())));
+		// }
 	}
 
 	public static PolynomialFunction getPolynomialFit(List<Point> pList) {
@@ -96,13 +95,10 @@ public class KurvenFormel {
 			final SimpleCurveFitter fitter = SimpleCurveFitter.create(function, new double[] { -2e20, 1e15, -1e25 });
 			// 2e2 ist 2*10^2 = 2*100
 			final double[] best = fitter.fit(obs.toList());
-			System.out.println("Parameters: " + best.length);
-			for (double d : best) {
-				// System.out.print(d + ", ");
-			}
+			// System.out.println("Parameters: " + best.length);
 			// funktion ausgeben
 			result = new PolynomialFunction(best);
-			List<WeightedObservedPoint> list = obs.toList();
+			// List<WeightedObservedPoint> list = obs.toList();
 			// for (WeightedObservedPoint p : list) {
 			// System.out.println("ERGEBNIS x: " + p.getX() //
 			// + ", y: " + p.getY() //
@@ -136,9 +132,7 @@ public class KurvenFormel {
 			// sonne zu spiegel
 			Date d = pos.getDatum();
 			// Projektion
-			a = Math.asin(Math.sin(Math.toRadians(-pos.getY())) * Math.cos(Math.toRadians(Math.PI * pos.getZ())));
-			a = Math.toDegrees(a);
-			a = Math.round(100.0 * a) / 100.0;
+			a = pos.getProjectionXy();
 			pList.add(new Point(sp.getZenith(d), a));
 		}
 		PolynomialFunction f = KurvenFormel.getPolynomialFit(pList);

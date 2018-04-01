@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import database.DBSessionRegler;
 import database.Position;
 import database.Spiegel;
+import database.Ziel;
 import kurven.KurvenFormel;
 import kurven.Point;
 
@@ -37,7 +38,7 @@ public class Controller implements Runnable {
 		HOCH, LINKS, RECHTS, RUNTER, NEUTRAL
 	}
 
-	private final String MQTTPATH = "simago/joy/xx-";
+	private final String MQTTPATH = "simago/joy/";
 
 	private String mac;
 	private DBSessionRegler dbSession;
@@ -47,13 +48,13 @@ public class Controller implements Runnable {
 	private Point istPoint;
 
 	public Controller(String mac, JSONObject istPosition, DBSessionRegler dbSession, MqttConnector mq) {
-		System.out.println(istPosition);
+		// System.out.println(istPosition);
 		this.istPosition = istPosition;
 		this.mac = mac;
 		this.dbSession = dbSession;
 		this.mq = mq;
 		istPoint = getIstPoint(istPosition);
-		System.out.println(istPoint);
+		// System.out.println(istPoint);
 	}
 
 	private Point getIstPoint(JSONObject istPosition) {
@@ -74,8 +75,24 @@ public class Controller implements Runnable {
 		return result;
 	}
 
+	private Position getPosition(JSONObject jo, Ziel ziel) {
+		Position pos = new Position();
+		Date datum = new Date();
+		pos.setDatum(datum);
+		pos.setZiel(ziel);
+		int x = jo.getInt("dir");
+		pos.setX(x);
+		int y = jo.getInt("pitch");
+		pos.setY(y);
+		int z = jo.getInt("roll");
+		pos.setZ(z);
+		pos.setData(jo.toString());
+		return pos;
+	}
+
 	@Override
 	public void run() {
+
 		Spiegel sp = dbSession.getSpiegelByMAC(mac);
 		if (sp == null)
 			return;
@@ -83,7 +100,10 @@ public class Controller implements Runnable {
 		if (zielID == null)
 			return;
 		int zielInt = (int) zielID.doubleValue();
-		//
+		// ist berechnen
+		Ziel ziel = dbSession.getZiel(zielInt);
+		Position istPos = getPosition(istPosition, ziel);
+		// soll berechnen
 		SunPos sun = new SunPos();
 		List<Position> list = dbSession.getPositionsList(zielID.intValue());
 		PolynomialFunction fAzimuth = KurvenFormel.getKurveAzimuth(list, sun);
@@ -91,15 +111,20 @@ public class Controller implements Runnable {
 		Date d = new Date();
 		double x = sun.getAzimuth(d);
 		double y = sun.getZenith(d);
-		System.out.println("Aktueller Sonnenstand x: " + x + ", y: " + y);
+		// System.out.println("Aktueller Sonnenstand azimuth: " + x + ", zenith:
+		// " + y);
 		double xSoll = fAzimuth.value(x);
 		xSoll = Math.round(100.0 * xSoll) / 100.0;
 		double ySoll = fZenith.value(y);
 		ySoll = Math.round(100.0 * ySoll) / 100.0;
 
-		System.out.println("Aktueller Spiegelstand xSoll: " + xSoll + ", ySoll: " + ySoll);
-		// erst x, dann y stellen.
+		System.out.println("Aktueller SOLL azimuth: " + xSoll + ", zenith: " + ySoll);
+		System.out.println("Aktueller IST AZ " + istPos.toStringAZ());
 		CMD cmd = CMD.LINKS;
+		// erst x, dann y stellen.
+		cmd = getCmd(xSoll, ySoll, istPos.getX180(), istPos.getProjectionXy());
+		if (cmd == CMD.NEUTRAL)
+			return;
 		JSONObject jo = new JSONObject();
 		jo.put("cmd", cmd.ordinal());
 		jo.put("source", 0); // der Regler sendet das Kommando selbst
@@ -111,6 +136,36 @@ public class Controller implements Runnable {
 			e.printStackTrace();
 		}
 
+	}
+
+	/**
+	 * erst azimuth, dann zenith
+	 * 
+	 * @param azimuthSoll
+	 * @param zenithSoll
+	 * @param azimuthIst
+	 * @param zenithIst
+	 * @return
+	 */
+	private CMD getCmd(double azimuthSoll, double zenithSoll, double azimuthIst, double zenithIst) {
+		CMD result = CMD.NEUTRAL;
+		if (Math.abs(azimuthSoll - azimuthIst) > 2) {
+			if (azimuthSoll > azimuthIst) {
+				result = CMD.RECHTS;
+			} else {
+				result = CMD.LINKS;
+			}
+		} else {
+			if (Math.abs(zenithSoll - zenithIst) > 2) {
+				if (zenithSoll > zenithIst) {
+					result = CMD.HOCH;
+				} else {
+					result = CMD.RUNTER;
+				}
+			}
+		}
+		System.out.println(result);
+		return result;
 	}
 
 }

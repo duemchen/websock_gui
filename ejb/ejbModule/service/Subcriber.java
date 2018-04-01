@@ -24,7 +24,7 @@ import de.horatio.common.HoraTime;
 
 public class Subcriber implements MqttListener {
 
-	final long abstand = 5 * HoraTime.C1SEKUNDE;
+	final long abstand = 8 * HoraTime.C1SEKUNDE;
 
 	@Inject
 	private DBSessionRegler dbSession;

@@ -67,7 +67,7 @@ public class Position implements Serializable {
 		this.datum = datum;
 	}
 
-	public long getX() {
+	private long getX() {
 		return x;
 	}
 
@@ -130,7 +130,11 @@ public class Position implements Serializable {
 
 	@Override
 	public String toString() {
-		return "db.Pos.[ id=" + id + " ]";
+		return "db.Pos.[ id=" + id + ", xk:" + getX180() + ", y:" + getY() + ", z:" + getZ() + " ]";
+	}
+
+	public String toStringAZ() {
+		return "azimuth:" + getX180() + ", zenith:" + getProjectionXy() + " ]";
 	}
 
 	public long getX180() {
@@ -142,5 +146,17 @@ public class Position implements Serializable {
 		}
 
 		return result * -1 + 360;
+	}
+
+	/**
+	 * Projection auf xy Ebene
+	 * 
+	 * @return
+	 */
+	public double getProjectionXy() {
+		double result = Math.asin(Math.sin(Math.toRadians(-getY())) * Math.cos(Math.toRadians(Math.PI * getZ())));
+		result = Math.toDegrees(result);
+		result = Math.round(100.0 * result) / 100.0;
+		return result;
 	}
 }

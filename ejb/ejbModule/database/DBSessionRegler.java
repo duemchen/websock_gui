@@ -81,7 +81,7 @@ public class DBSessionRegler {
 		return result;
 	}
 
-	private Ziel getZiel(int zielid) {
+	public Ziel getZiel(int zielid) {
 		return em.find(Ziel.class, new Long(zielid));
 	}
 

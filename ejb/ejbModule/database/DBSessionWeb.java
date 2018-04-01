@@ -121,10 +121,7 @@ public class DBSessionWeb {
 			JSONObject jaa = new JSONObject();
 			jaa.put("Y", sp.getZenith(d));
 			// Projektion auf die xz Ebene
-			double a;
-			a = Math.asin(Math.sin(Math.toRadians(-pos.getY())) * Math.cos(Math.toRadians(Math.PI * pos.getZ())));
-			a = Math.toDegrees(a);
-			a = Math.round(100.0 * a) / 100.0;
+			double a = pos.getProjectionXy();
 			jaa.put("a", a);
 			jaa.put("aa", fZenith.value(sp.getZenith(d)));
 			jaa.put("id", pos.getId());
