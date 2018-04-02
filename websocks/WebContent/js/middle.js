@@ -10,7 +10,7 @@ $(document)
 					}
 					new_uri += "//" + loc.host;
 					new_uri += loc.pathname + "/ws";
-					//console.log('wsUrl', new_uri);
+					// console.log('wsUrl', new_uri);
 
 					ws = new WebSocket(new_uri);
 					ws.onopen = function() {
@@ -39,7 +39,6 @@ $(document)
 						$('#xwsmessage').html('websocket is closed.');
 					};
 
-					
 					$('#btndel').prop("disabled", true);
 					$("#btndel").click(
 							function() {
@@ -109,15 +108,15 @@ $(document)
 								mqtt.send(message);
 							});
 					$("#save").click(function() {
-						// den Inhalt des gewählten compass senden.
-						var s = $('#inhalt').val();
-						var obj = JSON.parse(s);
-						obj["cmd"] = "save";
-						obj["topic"] = $('#topic').val();
-						s = JSON.stringify(obj);
-						var message = new Paho.MQTT.Message(s);
-						message.destinationName = 'simago/save';
-						mqtt.send(message);
+						// SpiegelNr senden.
+						var o = {
+							cmd : 'save',
+							ziel : $("#selziel option:selected").val(),
+							spiegel : $("#selspiegel option:selected").val()
+						};
+						var s = JSON.stringify(o);
+						console.log('save', s);
+						sendMessage(o);
 					});
 					$("#selectMirror").on("change", function() {
 						mqtt.unsubscribe(ziel);

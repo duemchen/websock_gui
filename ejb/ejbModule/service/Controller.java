@@ -111,19 +111,24 @@ public class Controller implements Runnable {
 		Date d = new Date();
 		double x = sun.getAzimuth(d);
 		double y = sun.getZenith(d);
+		Point pSun = new Point(x, y);
 		// System.out.println("Aktueller Sonnenstand azimuth: " + x + ", zenith:
 		// " + y);
 		double xSoll = fAzimuth.value(x);
 		xSoll = Math.round(100.0 * xSoll) / 100.0;
 		double ySoll = fZenith.value(y);
 		ySoll = Math.round(100.0 * ySoll) / 100.0;
+		Point pSoll = new Point(xSoll, ySoll);
+		// Wind und Nacht Abschaltung des Spiegels
+		setWindNacht(sp, pSun, pSoll);
 
 		// System.out.println("Aktueller SOLL azimuth: " + xSoll + ", zenith: "
 		// + ySoll);
 		// System.out.println("Aktueller IST AZ " + istPos.toStringAZ());
+
 		CMD cmd = CMD.LINKS;
 		// erst x, dann y stellen.
-		cmd = getCmd(xSoll, ySoll, istPos.getX180(), istPos.getProjectionXy());
+		cmd = getCmd(pSoll.getX(), pSoll.getY(), istPos.getX180(), istPos.getProjectionXy());
 		if (cmd == CMD.NEUTRAL)
 			return;
 		JSONObject jo = new JSONObject();
@@ -137,6 +142,30 @@ public class Controller implements Runnable {
 			e.printStackTrace();
 		}
 
+	}
+
+	private void setWindNacht(Spiegel sp, Point pSun, Point pSoll) {
+		// System.out.println("spSoll: ",pSoll + ", sun: " + pSun);
+		try {
+			if (sp.getWindmax() < sp.getWind()) {
+				pSoll = new Point(sp.getxSturm(), sp.getySturm());
+			} else {
+				boolean nacht = false;
+				if (pSun.getY() < sp.getSonnenhoehe())
+					nacht = true;
+				if (pSun.getX() < sp.getSonnenwinkelMorgens())
+					nacht = true;
+				if (pSun.getY() > sp.getSonnenwinkelAbends())
+					nacht = true;
+				//
+				if (nacht) {
+					pSoll = new Point(sp.getxNacht(), sp.getyNacht());
+				}
+			}
+		} catch (Exception e) {
+			// e.printStackTrace();
+
+		}
 	}
 
 	/**
@@ -165,7 +194,7 @@ public class Controller implements Runnable {
 				}
 			}
 		}
-		// System.out.println(result);
+		System.out.println(result);
 		return result;
 	}
 

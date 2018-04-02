@@ -42,11 +42,47 @@ public class Spiegel implements Serializable {
 	double sonnenwinkelAbends; // aktiv wenn kleiner als
 	double windmax; // Abschaltung wenn höher
 	double wolkenmax; // Abschaltung wenn höher
+	double wind; // aktueller wind
+	double wolke; // akt. wolken
+	double ruhe; // deaktivieren händisch
 	// Ruhestellungen speichern für die Situationen:
-	double wind; // deaktiv wegen wind
-	double wolke; // deaktiv wegen wolken
-	double ruhe; // deaktiv wegen Nacht oder Sonne zu niedrig
-	Double ziel; // das eingestellte Ziel muss evtl. woanders hin
+	Double xSturm; // sturmstellung
+	Double ySturm; // sturmstellung
+	Double xNacht; // ruheStellung
+	Double yNacht; // ruheStellung
+	Double ziel; // TODO das eingestellte Ziel muss evtl. woanders hin
+
+	public double getxSturm() {
+		return xSturm;
+	}
+
+	public void setxSturm(double xSturm) {
+		this.xSturm = xSturm;
+	}
+
+	public double getySturm() {
+		return ySturm;
+	}
+
+	public void setySturm(double ySturm) {
+		this.ySturm = ySturm;
+	}
+
+	public double getxNacht() {
+		return xNacht;
+	}
+
+	public void setxNacht(double xNacht) {
+		this.xNacht = xNacht;
+	}
+
+	public double getyNacht() {
+		return yNacht;
+	}
+
+	public void setyNacht(double yNacht) {
+		this.yNacht = yNacht;
+	}
 
 	public Kunde getKunde() {
 		return kunde;

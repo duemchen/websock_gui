@@ -33,4 +33,6 @@ public class SpiegelService {
 		em.remove(em.contains(spiegel) ? spiegel : em.merge(spiegel));
 	}
 
+	// Mess
+
 }

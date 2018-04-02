@@ -16,12 +16,14 @@ public class Bean {
 	private DBSessionWeb dbsession;
 
 	public Kunde getKunde(int id) {
+
 		if (null != dbsession)
 			return dbsession.getKunde(id);
 		return null;
 	}
 
 	public JSONObject getAllData() {
+		// System.out.println(positionController.getPositions());
 		return dbsession.getKundenSpiegelZiele();
 	}
 
@@ -31,6 +33,7 @@ public class Bean {
 
 	public Bean() {
 		// System.out.println(" create bean");
+
 	}
 
 }
