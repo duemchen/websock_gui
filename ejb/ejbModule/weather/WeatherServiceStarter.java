@@ -6,7 +6,7 @@ import javax.ejb.EJB;
 import javax.ejb.Startup;
 import javax.inject.Inject;
 
-import database.DBSessionRegler;
+import database.SpiegelController;
 
 @javax.ejb.Singleton
 @Startup
@@ -17,11 +17,11 @@ public class WeatherServiceStarter {
 	ServiceAsynchWorker asyncWorker;
 
 	@Inject
-	private DBSessionRegler dbSession;
+	private SpiegelController spiegelcontroller;
 
 	@PostConstruct
 	private void init() {
-		service = new WeatherService(dbSession);
+		service = new WeatherService(spiegelcontroller);
 		asyncWorker.startService(service);
 	}
 

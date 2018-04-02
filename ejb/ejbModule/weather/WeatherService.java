@@ -4,8 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import database.DBSessionRegler;
 import database.Spiegel;
+import database.SpiegelController;
 
 /**
  * @author duemchen TODO für jeden spiegel eigene daten abrufen und - in
@@ -19,10 +19,10 @@ public class WeatherService {
 	private volatile boolean isCancelled = false;
 	private static SimpleDateFormat sdf = new SimpleDateFormat("mm");
 	private final int XMINUTEN = 15;
-	private DBSessionRegler dbSession;
+	private SpiegelController spiegelController;
 
-	public WeatherService(DBSessionRegler dbSession) {
-		this.dbSession = dbSession;
+	public WeatherService(SpiegelController spiegelController) {
+		this.spiegelController = spiegelController;
 	}
 
 	public void startService() { // infinit loop:
@@ -46,12 +46,11 @@ public class WeatherService {
 					ow.setCoord(lon, lat);
 					double wind = ow.getWind();
 					double cloud = ow.getCloud();
-					List<Spiegel> sps = dbSession.getSpiegelAll();
+					List<Spiegel> sps = spiegelController.getSpiegels();
 					for (Spiegel s : sps) {
 						s.setWind(wind);
 						s.setWolke(cloud);
-						dbSession.saveSpiegel(s);
-
+						spiegelController.update(s);
 					}
 					System.out.println("Wind: " + wind + ", Cloud: " + cloud);
 					// System.out.println(ow.getWindCloud());
