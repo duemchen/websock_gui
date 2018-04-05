@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.ejb.LocalBean;
 import javax.ejb.Stateful;
 import javax.enterprise.concurrent.ManagedThreadFactory;
 import javax.enterprise.event.Event;
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.websocket.CloseReason;
 import javax.websocket.EncodeException;
@@ -24,8 +24,11 @@ import org.json.JSONObject;
 import service.MqttConnector;
 
 @Stateful
+@LocalBean // wegen implements
 @ServerEndpoint("/ws")
-public class WSEndpoint { // implements MqttListener {
+
+public class WSEndpoint implements SpeicherCallback { // implements MqttListener
+	// {
 	Logger log = Logger.getLogger(this.getClass());
 
 	@Inject
@@ -46,6 +49,7 @@ public class WSEndpoint { // implements MqttListener {
 
 	@PostConstruct
 	private void init() {
+		System.out.println("wsEndpoint Created");
 		// mq.registerMqttListener(this);
 	}
 
@@ -60,20 +64,22 @@ public class WSEndpoint { // implements MqttListener {
 			return bean.getPositions(o.getInt("zielid")).toString();
 		}
 		if (s.equals("save")) {
-			// zu diesem Spiegel die Stellung speichern ]
+			// zu diesem Spiegel die Stellung speichern
 			// {"spiegel":"3","cmd":"save","ziel":"3"}
 			System.out.println(o);
 			String topic = "simago/....";
-
-			PositionSpeichern ps = new PositionSpeichern(positionController, mq, topic, event);
-
+			PositionSpeichern ps = new PositionSpeichern(positionController, mq, topic, this);
 			Thread thread = threadFactory.newThread(ps);
 			thread.start();
-
-			// return positionController.add(o);
+			JSONObject j = new JSONObject();
+			j.put("cmd", "save"); // speichern läuft
+			return j.toString();
 		}
 
-		return "unbekannte Client-Meldung am Websocket empfangen. #####################################################";
+		JSONObject j = new JSONObject();
+		j.put("cmd", "unbekannt");
+		return j.toString();
+
 	}
 
 	@OnOpen
@@ -107,8 +113,18 @@ public class WSEndpoint { // implements MqttListener {
 		System.out.println(topic + " onMessage " + message);
 	}
 
-	public void handleUser(@Observes UserEvent event) {
-		// this.session.getAsyncRemote().sendText("saveok");
+	// public void handleUser(@Observes UserEvent event) {
+	//
+	// }
+
+	@Override
+	public void callbackSpeichern() {
+		System.out.println("callbackSpeichern " + event);
+		JSONObject j = new JSONObject();
+		j.put("cmd", "save ok"); // Speichern erfolgreich.
+
+		this.session.getAsyncRemote().sendText(j.toString());
+
 	}
 
 }

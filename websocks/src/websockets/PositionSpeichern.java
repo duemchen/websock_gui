@@ -2,8 +2,6 @@ package websockets;
 
 import java.io.IOException;
 
-import javax.enterprise.event.Event;
-
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONObject;
 
@@ -20,8 +18,6 @@ import service.MqttListener;
  */
 public class PositionSpeichern implements Runnable, MqttListener {
 
-	private Event<UserEvent> event;
-
 	private PositionController positionController;
 
 	MqttConnector mq;
@@ -30,12 +26,14 @@ public class PositionSpeichern implements Runnable, MqttListener {
 
 	private String topic;
 
-	public PositionSpeichern(PositionController positionController, MqttConnector mq, String topic,
-			Event<UserEvent> event) {
+	private SpeicherCallback cbs;
+
+	public PositionSpeichern(PositionController positionController, MqttConnector mq, String topic, WSEndpoint cbs) {
 		this.topic = topic;
 		this.mq = mq;
 		this.positionController = positionController;
-		this.event = event;
+		this.cbs = cbs;
+
 		// TODO topic berechnen
 		mq.registerMqttListener(this);
 	}
@@ -53,7 +51,7 @@ public class PositionSpeichern implements Runnable, MqttListener {
 		System.out.println(positionController.getPositions());
 		System.out.println("PositionSpeichern " + jo);
 		mq.unregisterMqttListener(this);
-		event.fire(new UserEvent());
+		cbs.callbackSpeichern();
 	}
 
 	@Override
