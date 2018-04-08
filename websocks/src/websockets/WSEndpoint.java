@@ -2,12 +2,10 @@ package websockets;
 
 import java.io.IOException;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateful;
 import javax.enterprise.concurrent.ManagedThreadFactory;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.websocket.CloseReason;
 import javax.websocket.EncodeException;
@@ -21,6 +19,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.jboss.logging.Logger;
 import org.json.JSONObject;
 
+import database.Ziel;
 import service.MqttConnector;
 
 @Stateful
@@ -42,19 +41,17 @@ public class WSEndpoint implements SpeicherCallback { // implements MqttListener
 	@Resource(lookup = "java:jboss/ee/concurrency/factory/MyManagedThreadFactory")
 	private ManagedThreadFactory threadFactory;
 
-	@Inject
-	private Event<UserEvent> event;
-
 	private Session session = null;
 
-	@PostConstruct
-	private void init() {
-		System.out.println("wsEndpoint Created");
-		// mq.registerMqttListener(this);
-	}
+	// @PostConstruct
+	// private void init() {
+	// System.out.println("wsEndpoint Created");
+	// mq.registerMqttListener(this);
+	// }
 
 	@OnMessage
 	public String receiveMessage(String message, Session session) {
+		// Received : {"cmd":"save","ziel":"3","spiegel":"2"}
 		log.info("Received : " + message);// + ", session:" + session.getId());
 		// System.out.println(positionController.getPositions());
 		this.session = session;
@@ -66,13 +63,26 @@ public class WSEndpoint implements SpeicherCallback { // implements MqttListener
 		if (s.equals("save")) {
 			// zu diesem Spiegel die Stellung speichern
 			// {"spiegel":"3","cmd":"save","ziel":"3"}
-			System.out.println(o);
-			String topic = "simago/....";
-			PositionSpeichern ps = new PositionSpeichern(positionController, mq, topic, this);
+			int spID = o.getInt("spiegel");
+			String mac = bean.getSpiegelMAC(spID);
+			System.out.println(mac);
+			PositionSpeichern ps = new PositionSpeichern(positionController, mq, mac, this);
+			Ziel ziel = bean.getZielBySpiegel(spID);
+			ps.setZiel(ziel);
 			Thread thread = threadFactory.newThread(ps);
 			thread.start();
 			JSONObject j = new JSONObject();
 			j.put("cmd", "save"); // speichern läuft
+			return j.toString();
+		}
+		if (s.equals("control")) {
+			int spID = o.getInt("spiegel");
+			int dir = o.getInt("direction");
+			String mac = bean.getSpiegelMAC(spID);
+			System.out.println("spiegel:" + spID + ", dir: " + dir + ", mac: " + mac);
+			JSONObject j = new JSONObject();
+			j.put("control", "true");
+			new ControlSpiegel(mq, mac, dir);
 			return j.toString();
 		}
 
@@ -118,10 +128,11 @@ public class WSEndpoint implements SpeicherCallback { // implements MqttListener
 	// }
 
 	@Override
-	public void callbackSpeichern() {
-		System.out.println("callbackSpeichern " + event);
+	public void callbackSpeichern(boolean erfolg) {
+		System.out.println("callbackSpeichern");
 		JSONObject j = new JSONObject();
-		j.put("cmd", "save ok"); // Speichern erfolgreich.
+		j.put("cmd", "save"); // Speichern
+		j.put("erfolg", erfolg); // Speichern erfolgreich.
 
 		this.session.getAsyncRemote().sendText(j.toString());
 

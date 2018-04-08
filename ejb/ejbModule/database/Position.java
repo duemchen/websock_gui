@@ -6,6 +6,8 @@
 package database;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -14,18 +16,29 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
  * @author duemchen
+ * 
+ *         {"topic":"simago/compass/74-DA-38-3E-E8-3C","time":"26.04.2017
+ *         09:31:17","cmd":"save","roll":-16,"dir":13,"mirrorid":"2","pitch":-20}
+ * 
  */
 @Entity
+@Table(name = "POSINEU")
 public class Position implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.TABLE, generator = "pos_generator")
+	@SequenceGenerator(name = "pos_generator", sequenceName = "pos_seq", initialValue = 1, allocationSize = 1)
 	private Long id;
 
 	private String data;
@@ -42,6 +55,28 @@ public class Position implements Serializable {
 	private long y;
 	private long z;
 	private boolean loesch; // deaktivieren
+
+	public final static SimpleDateFormat simpleDatetimeFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+
+	// {"topic":"simago/compass/74-DA-38-3E-E8-3C","time":"26.04.2017
+	// 09:31:17","cmd":"save","roll":-16,"dir":13,"mirrorid":"2","pitch":-20}
+	// {"topic":"simago/compass/74-DA-38-3E-E8-3C","time":"26.04.2017
+	// 09:31:17","cmd":"save","roll":-16,"dir":13,"mirrorid":"2","pitch":-20}
+	public Position(JSONObject jo) throws JSONException, ParseException {
+		super();
+		this.data = jo.toString();
+		this.datum = simpleDatetimeFormat.parse(jo.getString("time"));
+		this.loesch = false;
+		this.x = jo.getInt("dir");
+		this.y = jo.getInt("pitch");
+		this.z = jo.getInt("roll");
+
+	}
+
+	public Position() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	public Ziel getZiel() {
 		return ziel;

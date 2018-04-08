@@ -194,7 +194,7 @@ public class Controller implements Runnable {
 				}
 			}
 		}
-		System.out.println(result);
+		// System.out.println("Kommando: " + result);
 		return result;
 	}
 

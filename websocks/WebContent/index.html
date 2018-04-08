@@ -1,31 +1,30 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<!-- <meta charset="utf-8">-->
+<!-- <meta charset="utf-8">  
+
+duemchen.feste-ip.net:31498 geht auf 8081
+-->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"></meta>
 <!--  <meta http-equiv="X-UA-Compatible" content="IE=edge"> -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- Die 3 Meta-Tags oben *müssen* zuerst im head stehen; jeglicher sonstiger head-Inhalt muss *nach* diesen Tags kommen -->
 <title>Messwertanalyse</title>
-
-
 <!-- Bootstrap -->
 <link href="css/bootstrap.min.css" rel="stylesheet">
-
+<link href="css/licht.css" rel="stylesheet">
 <!-- Unterstützung für Media Queries und HTML5-Elemente in IE8 über HTML5 shim und Respond.js -->
 <!-- ACHTUNG: Respond.js funktioniert nicht, wenn du die Seite über file:// aufrufst -->
 <!--[if lt IE 9]>
           <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
           <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
-<script type="text/javascript"
-	src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
 //  google.charts.load('current', {packages: ['corechart']});
 //  google.charts.setOnLoadCallback(drawChart);  
 </script>
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="js/charts.js" type="text/javascript"></script>
 <!-- 
 <script src="js/mqttws31.js" type="text/javascript"></script>
@@ -35,52 +34,69 @@
 <script src="js/config.js" type="text/javascript"></script>
 <script src="js/websocket-in.js" type="text/javascript"></script>
 <script src="js/middle.js" type="text/javascript"></script>
-
+<script src="js/joy.js" type="text/javascript"></script>
 </head>
 <body>
-	<div style='margin: 10px;'>
-		<div id='xwsmessage'>fdsfdfds</div>
-		<h1>Messwertanalyse</h1>
-
-		<div id='message'></div>
-
-		<div id="kunde" style="margin: 10px; float: left;">
-			<label for="selkunde">Kunde</label> <select id="selkunde"
-				class="selectpicker">
-			</select>
-		</div>
-		<div id="spiegel" style="margin: 10px; float: left;">
-			<label for="selspiegel">Spiegel</label> <select id="selspiegel"
-				class="selectpicker">
-			</select>
-		</div>
-		<div id="ziel" style="margin: 10px; float: left;">
-			<label for="selziel">Ziel</label> <select id="selziel"
-				class="selectpicker">
-
-			</select>
-		</div>
-		<div>
-			<button id='save' class="btn">Speichern</button>
-		</div>
-
-		<div style="clear: both;"></div>
-		<div id='chart_x' style="height: 350px; width: 400px; float: left">
-		</div>
-		<div id='chart_z' style="height: 350px; width: 400px; float: left">
-		</div>
-		<div id='chart_y' style="height: 350px; width: 400px; float: left">
-		</div>
-		<div id='chart_a' style="height: 350px; width: 400px; float: left">
-		</div>
-		<button id='btndel' class="btn">Deaktivieren</button>
-	</div>
-
-	<!-- jQuery (wird für Bootstrap JavaScript-Plugins benötigt) -->
-
-	<!-- Binde alle kompilierten Plugins zusammen ein (wie hier unten) oder such dir einzelne Dateien nach Bedarf aus -->
-	<script src="js/bootstrap.min.js"></script>
-	<script type="text/javascript">
+  <div style='margin: 10px;'>
+    <div id='xwsmessage'>fdsfdfds</div>
+    <div>
+      <h1>Messwertanalyse</h1>
+    </div>
+    <div id='message'></div>
+    <div>
+      <div id="joystick" style="width: 90%; max-width: 400px; display: block; margin-left: auto; margin-right: auto">
+        <svg width="90%" height="100%" viewBox="0 0 100 100">
+                <defs>
+                <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:rgb(16,16,16);stop-opacity:1" />
+                <stop offset="100%" style="stop-color:rgb(240,240,240);stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:rgb(240,240,240);stop-opacity:1" />
+                <stop offset="100%" style="stop-color:rgb(16,16,16);stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="grad3" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:rgb(168,168,168);stop-opacity:1" />
+                <stop offset="100%" style="stop-color:rgb(239,239,239);stop-opacity:1" />
+                </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="50" fill="url(#grad1)" />
+                <circle cx="50" cy="50" r="48" fill="url(#grad2)" stroke="black" stroke-width="1.5px" />
+                <circle cx="50" cy="50" r="46" fill="url(#grad3)" /> 
+                <circle id="cmitte" cx="50" cy="50" r="15" fill="#cccccc" stroke="black" stroke-width="1px" onclick="saveme();" />
+                <path id="phoch" d="M50,5  65,30 35,30Z" fill="rgba(0,0,0,0.6)" onclick="movemi(richtung.HOCH);" />
+                <path id="prunter" d="M50,95 65,70 35,70Z" fill="rgba(0,0,0,0.6)" onclick="movemi(richtung.RUNTER)" />
+                <path id="plinks" d="M 5,50 30,65 30,35Z" fill="rgba(0,0,0,0.5)" onclick="movemi(richtung.LINKS)" />
+                <path id="prechts" d="M95,50 70,64 70,35Z" fill="rgba(0,0,0,0.5)" onclick="movemi(richtung.RECHTS)" />
+                </svg>
+      </div>
+    </div>
+    <div id="kunde" style="margin: 10px; float: left;">
+      <label for="selkunde">Kunde</label> <select id="selkunde" class="selectpicker">
+      </select>
+    </div>
+    <div id="spiegel" style="margin: 10px; float: left;">
+      <label for="selspiegel">Spiegel</label> <select id="selspiegel" class="selectpicker">
+      </select>
+    </div>
+    <div id="ziel" style="margin: 10px; float: left;">
+      <label for="selziel">Ziel</label> <select id="selziel" class="selectpicker">
+      </select>
+    </div>
+    <div>
+      <button id='save' class="btn">Speichern</button>
+    </div>
+    <div style="clear: both;"></div>
+    <div id='chart_x' style="height: 350px; width: 400px; float: left"></div>
+    <div id='chart_z' style="height: 350px; width: 400px; float: left"></div>
+    <div id='chart_y' style="height: 350px; width: 400px; float: left"></div>
+    <div id='chart_a' style="height: 350px; width: 400px; float: left"></div>
+    <button id='btndel' class="btn">Deaktivieren</button>
+  </div>
+  <!-- jQuery (wird für Bootstrap JavaScript-Plugins benötigt) -->
+  <!-- Binde alle kompilierten Plugins zusammen ein (wie hier unten) oder such dir einzelne Dateien nach Bedarf aus -->
+  <script src="js/bootstrap.min.js"></script>
+  <script type="text/javascript">
             var b = false;
             $('#btn').on('click', function (e) {
                 console.log('click');

@@ -5,7 +5,6 @@
  */
 package service;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -43,29 +42,29 @@ public class MqttConnector implements MqttCallback {
 
 	}
 
-	public void registerMqttListener(MqttListener listener) {
+	public synchronized void registerMqttListener(MqttListener listener) {
 
 		// Add the listener to the list of registered listeners
 		this.listeners.add(listener);
 
 	}
 
-	public void unregisterMqttListener(MqttListener listener) {
+	public synchronized void unregisterMqttListener(MqttListener listener) {
 
 		// Remove the listener from the list of the registered listeners
 		this.listeners.remove(listener);
 
 	}
 
-	protected void notifyMqttListeners(String topic, MqttMessage message) {
+	protected synchronized void notifyMqttListeners(String topic, MqttMessage message) {
 
 		// Notify each of the listeners in the list of registered listeners
 		this.listeners.forEach(listener -> {
 			try {
 				listener.onMessage(topic, message);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			} catch (Exception e) {
+				// e.printStackTrace();
+				System.out.println("notifyMqttListeners: " + e);
 			}
 		});
 

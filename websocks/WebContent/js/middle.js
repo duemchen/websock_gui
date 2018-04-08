@@ -20,10 +20,10 @@ $(document)
 					// reines json. Kennung cmd als Sprungverteiler
 					ws.onmessage = function(evt) {
 						var msg = evt.data;
-						console.log("Message received roh: " + msg);
+						// console.log("Message received roh: " + msg);
 						var o = JSON.parse(msg);
 						console.log("Message received:" + JSON.stringify(o));
-						console.log("cmd:" + JSON.stringify(o.cmd));
+						// console.log("cmd:" + JSON.stringify(o.cmd));
 						if (o.cmd == 'kunden') {
 							var kunden = o.kunden;
 							console.log('Wskunden', kunden);
@@ -33,7 +33,17 @@ $(document)
 						if (o.cmd == 'positionen') {
 							fillDiagramme(o);
 						}
-
+						if (o.cmd == 'save') {
+							if (o.erfolg != null) {
+								$("#save").prop("disabled", false);
+								if (o.erfolg)
+									$("#save").css('background-color', 'silver');
+								else
+									$("#save").css('background-color', 'red');
+							}
+							$('#xwsmessage').html(
+									"gespeichert " + JSON.stringify(o));
+						}
 					};
 					ws.onclose = function() {
 						$('#xwsmessage').html('websocket is closed.');
@@ -114,6 +124,7 @@ $(document)
 							ziel : $("#selziel option:selected").val(),
 							spiegel : $("#selspiegel option:selected").val()
 						};
+						$("#save").prop("disabled", true);
 						var s = JSON.stringify(o);
 						console.log('save', s);
 						sendMessage(o);

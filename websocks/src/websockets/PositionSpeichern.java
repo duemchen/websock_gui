@@ -1,10 +1,15 @@
 package websockets;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.Date;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import database.Position;
+import database.Ziel;
 import service.MqttConnector;
 import service.MqttListener;
 
@@ -23,17 +28,17 @@ public class PositionSpeichern implements Runnable, MqttListener {
 	MqttConnector mq;
 
 	private JSONObject jo;
-
-	private String topic;
+	private String mac;
+	private Ziel ziel;
 
 	private SpeicherCallback cbs;
+	private boolean stop;
 
-	public PositionSpeichern(PositionController positionController, MqttConnector mq, String topic, WSEndpoint cbs) {
-		this.topic = topic;
+	public PositionSpeichern(PositionController positionController, MqttConnector mq, String mac, WSEndpoint cbs) {
+		this.mac = mac;
 		this.mq = mq;
 		this.positionController = positionController;
 		this.cbs = cbs;
-
 		// TODO topic berechnen
 		mq.registerMqttListener(this);
 	}
@@ -42,24 +47,52 @@ public class PositionSpeichern implements Runnable, MqttListener {
 	public void run() {
 		// die mac des Spiegels und den topic für die richtige sendung
 		// Wenn die kommt, speichern und ende.
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		stop = false;
+		long lEnd = System.currentTimeMillis() + 5000;
+		while (!stop) {
+			if (System.currentTimeMillis() > lEnd) {
+				cbs.callbackSpeichern(false);
+				break;
+			}
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		System.out.println(positionController.getPositions());
-		System.out.println("PositionSpeichern " + jo);
 		mq.unregisterMqttListener(this);
-		cbs.callbackSpeichern();
+
 	}
 
 	@Override
-	public void onMessage(String topic, MqttMessage message) throws IOException {
-		System.out.println("ps " + topic);
-		if (!topic.equals(this.topic))
+	public void onMessage(String mtopic, MqttMessage message) throws IOException, JSONException, ParseException {
+		if (stop)
 			return;
-		// speichern
+		System.out.println(mac + "  <>?  " + mtopic);
+		if (!mtopic.contains(mac))
+			return;
+		stop = true;
+		// speichern und beenden
+		// {"topic":"simago/compass/74-DA-38-3E-E8-3C","time":"26.04.2017
+		// 09:31:17","cmd":"save","roll":-16,"dir":13,"mirrorid":"2","pitch":-20}
+		String s = new String(message.getPayload());
+		System.out.println("korrekter topic. payload: " + s);
+		JSONObject jo = new JSONObject(s);
+		jo.put("cmd", "save");
+		jo.put("topic", mtopic);
+		jo.put("time", Position.simpleDatetimeFormat.format(new Date()));
+		System.out.println("PositionSpeichern " + jo);
+		Position p = new Position(jo);
+		p.setZiel(ziel);
+		positionController.add(p);
+
+		cbs.callbackSpeichern(true);
+
+	}
+
+	public void setZiel(Ziel ziel) {
+		this.ziel = ziel;
 
 	}
 

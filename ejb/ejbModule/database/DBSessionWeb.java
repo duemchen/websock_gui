@@ -78,7 +78,6 @@ public class DBSessionWeb {
 	}
 
 	public JSONObject getPositions(int zielid) {
-
 		Query q = em.createQuery("select p from Position as p where p.loesch=False and p.ziel=:ZIEL");
 		Ziel ziel = getZiel(zielid);
 		q.setParameter("ZIEL", ziel);
@@ -159,8 +158,12 @@ public class DBSessionWeb {
 		return j;
 	}
 
-	private Ziel getZiel(int zielid) {
-		return em.find(Ziel.class, new Long(zielid));
+	public Spiegel getSpiegel(int id) {
+		return em.find(Spiegel.class, new Long(id));
+	}
+
+	public Ziel getZiel(int id) {
+		return em.find(Ziel.class, new Long(id));
 	}
 
 }

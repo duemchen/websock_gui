@@ -107,7 +107,8 @@ public class KurvenFormel {
 			// }
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
+			System.out.println("PolynomialFunction: " + e);
 		}
 		return result;
 	}

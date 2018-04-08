@@ -6,8 +6,10 @@
 package service;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.json.JSONException;
 
 /**
  *
@@ -15,5 +17,5 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
  */
 public interface MqttListener {
 
-	public void onMessage(String topic, MqttMessage message) throws IOException;
+	public void onMessage(String topic, MqttMessage message) throws IOException, JSONException, ParseException;
 }

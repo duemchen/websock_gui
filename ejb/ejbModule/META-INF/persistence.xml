@@ -5,7 +5,7 @@
     <persistence-unit name="persistencemytma">
         <jta-data-source>java:jboss/datasources/licht</jta-data-source>
         <properties>
-            <property name="hibernate.hbm2ddl.auto" value="update" />
+            <property name="hibernate.hbm2ddl.auto" value="update" />            
         </properties>      
     </persistence-unit>
 </persistence>

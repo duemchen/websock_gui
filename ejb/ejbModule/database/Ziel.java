@@ -18,10 +18,12 @@ import javax.persistence.ManyToOne;
  *
  * @author duemchen
  */
+
 @Entity
 public class Ziel implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
