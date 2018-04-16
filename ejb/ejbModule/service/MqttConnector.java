@@ -63,8 +63,9 @@ public class MqttConnector implements MqttCallback {
 			try {
 				listener.onMessage(topic, message);
 			} catch (Exception e) {
-				// e.printStackTrace();
-				System.out.println("notifyMqttListeners: " + e);
+				System.out.println("notifyMqttListeners: " + e + "  " + listener + " " + topic + "  " + message);
+				e.printStackTrace();
+
 			}
 		});
 

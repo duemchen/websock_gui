@@ -21,12 +21,14 @@ import org.json.JSONObject;
 
 import database.Ziel;
 import service.MqttConnector;
+import service.MqttListener;
 
 @Stateful
 @LocalBean // wegen implements
 @ServerEndpoint("/ws")
 
-public class WSEndpoint implements SpeicherCallback { // implements MqttListener
+public class WSEndpoint implements SpeicherCallback, MqttListener { // implements
+																	// MqttListener
 	// {
 	Logger log = Logger.getLogger(this.getClass());
 
@@ -45,9 +47,23 @@ public class WSEndpoint implements SpeicherCallback { // implements MqttListener
 
 	// @PostConstruct
 	// private void init() {
-	// System.out.println("wsEndpoint Created");
+	// System.out.println("wsEndpoint Created. mqtt");
 	// mq.registerMqttListener(this);
 	// }
+
+	@Override
+	public void onMessage(String topic, MqttMessage message) throws IOException {
+		if (topic.contains("simago/camera")) {
+			// System.out.println(topic + " WSEndpoint onMessageMQTT " +
+			// message);
+			System.out.println("Bild " + System.currentTimeMillis());
+			String s = "bild";
+			JSONObject j = new JSONObject();
+			j.put("cmd", "bild"); // Speichern
+			j.put("data", new String(message.getPayload()));
+			sendMessage(j.toString());
+		}
+	}
 
 	@OnMessage
 	public String receiveMessage(String message, Session session) {
@@ -58,7 +74,7 @@ public class WSEndpoint implements SpeicherCallback { // implements MqttListener
 		JSONObject o = new JSONObject(message);
 		String s = o.getString("cmd");
 		if (s.equals("positionen")) {
-			return bean.getPositions(o.getInt("zielid")).toString();
+			return bean.getPositionsDiagramm(o.getInt("zielid")).toString();
 		}
 		if (s.equals("save")) {
 			// zu diesem Spiegel die Stellung speichern
@@ -85,6 +101,21 @@ public class WSEndpoint implements SpeicherCallback { // implements MqttListener
 			new ControlSpiegel(mq, mac, dir);
 			return j.toString();
 		}
+		if (s.equals("table")) {
+			return bean.getPositionsTableData(o.getInt("zielid")).toString();
+		}
+		if (s.equals("edit")) {
+			int id = o.getInt("id");
+			boolean loesch = o.getBoolean("loesch");
+			System.out.println("edit:");
+			PositionEdit pe = new PositionEdit(positionController, id, loesch);
+			JSONObject j = new JSONObject();
+			j.put("cmd", "edit");
+			j.put("id", id);
+			j.put("loesch", pe.getLoesch());
+			j.put("row", o.getInt("row"));
+			return j.toString();
+		}
 
 		JSONObject j = new JSONObject();
 		j.put("cmd", "unbekannt");
@@ -108,19 +139,6 @@ public class WSEndpoint implements SpeicherCallback { // implements MqttListener
 
 	public void sendMessage(String message) {
 		this.session.getAsyncRemote().sendText(message);
-	}
-
-	// @Override
-	public void onMessage(String topic, MqttMessage message) throws IOException {
-		// alle Positionsmeldungen mitschneiden
-		// wenn speichern gedrückt wird, die nächste Position dieses Spiegels
-		// speichern.
-		// Zeitfenster 10 sek.
-
-		// simago/compass/80-1F-02-ED-FD-A6
-		// {"roll":6,"mirrorid":"2","pitch":-12,"dir":347}
-
-		System.out.println(topic + " onMessage " + message);
 	}
 
 	// public void handleUser(@Observes UserEvent event) {

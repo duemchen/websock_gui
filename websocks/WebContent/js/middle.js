@@ -1,6 +1,86 @@
 $(document)
 		.ready(
 				function() {
+					$("#fill").click(
+							function() {
+								var table = $('#example').dataTable();
+								table.api().clear().draw();
+//								var jdata = [ {
+//									'id' : 123,
+//									'Uhrzeit' : '08:00',
+//									'Datum' : '1.2.2018',
+//									'Delta' : '10%',
+//									'Aktiv' : true
+//								} ];
+//								var data = [
+//										[ '17', '12:00', '1.12.2018', '17%',
+//												true, ],
+//
+//										[ '12', '12:00', '1.12.2018', '12%',
+//												true, ],
+//										[ '123567', '12:00', '1.12.2018',
+//												'123%', true, ]
+//
+//								];
+//
+//								table.api().rows.add(data).draw();
+								console.log('fill', '');
+								var o = {
+									cmd : 'table',
+									zielid : gzielid
+								};
+								console.log('startFillDiagramme', JSON
+										.stringify(o));
+								sendMessage(o);
+
+							});
+					var table = $('#example').dataTable({
+						"columnDefs" : [ {
+							"targets" : [ 0 ], // index
+							"visible" : false,
+							"searchable" : false
+						}, {
+							"targets" : [ 1 ], // löschflag
+							"visible" : true
+						}, {
+							"targets" : [ 2 ], // löschflag
+							"visible" : true
+						}, {
+							"targets" : [ 3 ], // löschflag
+							"visible" : true
+						}, {
+							"targets" : [ 4 ], // löschflag
+							"visible" : false
+						} ]
+					});
+					$('#example tbody').on('click', 'tr', function() {
+						// zeilenid senden um löschen zu schalten.
+						var position = table.fnGetPosition(this);
+						var id = table.fnGetData(position)[0];
+						var flag = table.fnGetData(position)[4];
+						var row = table.api().row(this).index();
+
+						console.log('id', id, flag, row);
+
+						var o = {
+							cmd : 'edit',
+							id : id,
+							row : row,
+							loesch : flag
+						};
+						var s = JSON.stringify(o);
+						console.log('edit', s);
+						sendMessage(o);
+						// TODO rückantwort websock eintragen in der Zeile
+						if ($(this).hasClass('selected')) {
+							$(this).removeClass('selected');
+						} else {
+							table.$('tr.selected').removeClass('selected');
+							$(this).addClass('selected');
+						}
+						//table.fnUpdate('Zebra', this, 1);
+					});
+
 					// relativ zur aufrufenden URL den WebSocket berechnen
 					var loc = window.location, new_uri;
 					if (loc.protocol === "https:") {
@@ -37,13 +117,30 @@ $(document)
 							if (o.erfolg != null) {
 								$("#save").prop("disabled", false);
 								if (o.erfolg)
-									$("#save").css('background-color', 'silver');
+									$("#save")
+											.css('background-color', 'silver');
 								else
 									$("#save").css('background-color', 'red');
 							}
 							$('#xwsmessage').html(
 									"gespeichert " + JSON.stringify(o));
 						}
+						if (o.cmd == 'positionenTable') {
+							// Die Liste füllen							
+							var jpos = o.positionen;
+							console.log('fillToArray',jpos);
+							var data = jPosToArray(jpos);
+							console.log('arr',data);
+							table.api().rows.add(data).draw();
+							console.log('fill ready');
+						}
+						if (o.cmd == 'edit') {
+							var id=o.id;
+							var loesch=o.loesch;
+							var row=o.row;							
+							table.fnUpdate(loesch, row, 4);
+						}
+
 					};
 					ws.onclose = function() {
 						$('#xwsmessage').html('websocket is closed.');
@@ -89,46 +186,6 @@ $(document)
 												.val());
 									});
 
-					$("#top").click(
-							function() {
-								var message = new Paho.MQTT.Message('{"cmd":'
-										+ richtung.HOCH + '}');
-								message.destinationName = joy;
-								mqtt.send(message);
-							});
-					$("#down").click(
-							function() {
-								var message = new Paho.MQTT.Message('{"cmd":'
-										+ richtung.RUNTER + '}');
-								message.destinationName = joy;
-								mqtt.send(message);
-							});
-					$("#left").click(
-							function() {
-								var message = new Paho.MQTT.Message('{"cmd":'
-										+ richtung.LINKS + '}');
-								message.destinationName = joy;
-								mqtt.send(message);
-							});
-					$("#right").click(
-							function() {
-								var message = new Paho.MQTT.Message('{"cmd":'
-										+ richtung.RECHTS + '}');
-								message.destinationName = joy;
-								mqtt.send(message);
-							});
-					$("#save").click(function() {
-						// SpiegelNr senden.
-						var o = {
-							cmd : 'save',
-							ziel : $("#selziel option:selected").val(),
-							spiegel : $("#selspiegel option:selected").val()
-						};
-						$("#save").prop("disabled", true);
-						var s = JSON.stringify(o);
-						console.log('save', s);
-						sendMessage(o);
-					});
 					$("#selectMirror").on("change", function() {
 						mqtt.unsubscribe(ziel);
 						ziel = 'simago/compass/' + $(this).val();
@@ -136,8 +193,6 @@ $(document)
 						console.log(ziel);
 						mqtt.subscribe(ziel);
 					});
-					ziel = 'simago/compass/';
-					joy = ziel.replace('compass', 'joy');
 					// MQTTconnect();
 					navigator.vibrate = navigator.vibrate
 							|| navigator.webkitVibrate || navigator.mozVibrate
@@ -232,5 +287,23 @@ function fillDiagramme(data) {
 	drawChartjsonY(jo.y);
 	drawChartjsonZ(jo.z)
 	drawChartjsonA(jo.a)
-
 }
+
+function jPosToArray(target){	
+    var arr = [];
+    $.each(target, function(i, e){
+    	var item=[];
+//        $.each(e, function(key, val){
+//            item.push(val);
+//        });
+    	item.push(e.id);
+    	item.push(e.zeit);
+    	item.push(e.datum);
+    	item.push(e.delta);
+    	item.push(e.loesch);
+        arr.push(item);
+    	
+    });
+    return arr;		
+}
+

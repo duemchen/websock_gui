@@ -77,7 +77,7 @@ public class DBSessionWeb {
 		return result;
 	}
 
-	public JSONObject getPositions(int zielid) {
+	public JSONObject getPositionsDiagramm(int zielid) {
 		Query q = em.createQuery("select p from Position as p where p.loesch=False and p.ziel=:ZIEL");
 		Ziel ziel = getZiel(zielid);
 		q.setParameter("ZIEL", ziel);
@@ -164,6 +164,42 @@ public class DBSessionWeb {
 
 	public Ziel getZiel(int id) {
 		return em.find(Ziel.class, new Long(id));
+	}
+
+	/**
+	 * für das Ziel Auch die gelöschten Messungen
+	 * 
+	 * @param zielid
+	 * @return
+	 */
+	public JSONObject getPositionsTableData(int zielid) {
+		Query q = em.createQuery("select p from Position as p where p.ziel=:ZIEL order by p.id");
+		Ziel ziel = getZiel(zielid);
+		q.setParameter("ZIEL", ziel);
+		List<Position> list = q.getResultList();
+		// Sonnenstand zu Zielstand darstellen. Müsste ja rein linear sein.
+		// Dazu die Sonnenformel
+		SunPos sp = new SunPos();
+
+		PolynomialFunction fAzimuth = KurvenFormel.getKurveAzimuth(list, sp);
+		PolynomialFunction fZenith = KurvenFormel.getKurveZenith(list, sp);
+
+		JSONArray positionen = new JSONArray();
+		for (Position pos : list) {
+			Date d = pos.getDatum();
+			JSONObject jo = new JSONObject();
+			jo.put("id", pos.getId());
+			jo.put("zeit", Position.simpleDatetimeFormatZeit.format(d));
+			jo.put("datum", Position.simpleDatetimeFormatDatum.format(d));
+			jo.put("delta", 10); // TODO beide deltas?
+			jo.put("loesch", pos.isLoesch());
+			positionen.put(jo);
+		}
+
+		JSONObject result = new JSONObject();
+		result.put("cmd", "positionenTable");
+		result.put("positionen", positionen);
+		return result;
 	}
 
 }

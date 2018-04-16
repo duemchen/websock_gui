@@ -42,9 +42,9 @@ public class Subcriber implements MqttListener {
 		System.out.println("init Subcriber ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 		mq.registerMqttListener(this);
 		mq.subscribe("simago/system"); //
-		// mq.subscribe("simago/command");
 		mq.subscribe("simago/zustand");
 		mq.subscribe("simago/compass/#");
+		// mq.subscribe("simago/camera");
 		System.out.println("subscibe ok");
 
 		// mq.subscibe("simago/compass/#");
@@ -57,6 +57,7 @@ public class Subcriber implements MqttListener {
 		mq.unSubscribe("simago/system");
 		mq.unSubscribe("simago/command");
 		mq.unSubscribe("simago/compass/#");
+		mq.subscribe("simago/camera");
 		System.out.println("cleanUp Subcriber +++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 	}
 
@@ -67,21 +68,24 @@ public class Subcriber implements MqttListener {
 	@Override
 	public void onMessage(String topic, MqttMessage mm) {
 		if (mm != null) {
-			byte[] b = mm.getPayload();
-			try {
-				JSONObject istPosition = new JSONObject(new String(b));
-				// System.out.println("subscriber msg: " + new String(b) + ",
-				// topic:
-				// " + topic);
-				String mac = topicToMac(topic);
-				// nur alle x sek stellen. in einer Liste das nächste datum
-				if (!isTime(mac))
-					return;
-				Controller r = new Controller(mac, istPosition, dbSession, mq);
-				Thread thread = threadFactory.newThread(r);
-				thread.start();
-			} catch (Exception e) {
-				System.out.println("nojson");
+			if (topic.contains("simago/compass")) {
+				byte[] b = mm.getPayload();
+				try {
+					JSONObject istPosition = new JSONObject(new String(b));
+					// System.out.println("subscriber msg: " + new String(b) +
+					// ",
+					// topic:
+					// " + topic);
+					String mac = topicToMac(topic);
+					// nur alle x sek stellen. in einer Liste das nächste datum
+					if (!isTime(mac))
+						return;
+					Controller r = new Controller(mac, istPosition, dbSession, mq);
+					Thread thread = threadFactory.newThread(r);
+					thread.start();
+				} catch (Exception e) {
+					System.out.println("nojson");
+				}
 			}
 
 		}

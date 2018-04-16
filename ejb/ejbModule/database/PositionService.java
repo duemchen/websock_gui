@@ -16,7 +16,7 @@ public class PositionService {
 		return em.createQuery("FROM Position", Position.class).getResultList();
 	}
 
-	public Position find(Integer id) {
+	public Position find(Long id) {
 		return em.find(Position.class, id);
 	}
 

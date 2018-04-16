@@ -26,6 +26,8 @@ duemchen.feste-ip.net:31498 geht auf 8081
 </script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="js/charts.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css" />
+<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
 <!-- 
 <script src="js/mqttws31.js" type="text/javascript"></script>
 <script src="js/mqtt.js" type="text/javascript"></script>
@@ -43,6 +45,55 @@ duemchen.feste-ip.net:31498 geht auf 8081
       <h1>Messwertanalyse</h1>
     </div>
     <div id='message'></div>
+    <div>
+      <button id='fill' class="btn">Fill</button>
+    </div>
+    
+    <div>
+      <table id="example" class="display" style="width: 100%">
+        <thead>
+          <tr>
+            <th>id</th>
+            <th>Uhrzeit</th>
+            <th>Datum</th>
+            <th>Delta</th>
+            <th>Aktiv</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1234</th>
+            <td>08:00</td>
+            <td>12.04.18</td>
+            <td>10%</td>
+            <td>true</td>
+          </tr>
+          <tr>
+            <td>373</th>
+            <td>08:00</td>
+            <td>12.04.18</td>
+            <td>10%</td>
+            <td>false</td>
+          </tr>
+          <tr>
+            <td>1</th>
+            <td>08:00</td>
+            <td>12.04.18</td>
+            <td>10%</td>
+            <td>true</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th>id</th>
+            <th>Uhrzeit</th>
+            <th>Datum</th>
+            <th>Delta</th>
+            <th>Aktiv</th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
     <div>
       <div id="joystick" style="width: 90%; max-width: 400px; display: block; margin-left: auto; margin-right: auto">
         <svg width="90%" height="100%" viewBox="0 0 100 100">

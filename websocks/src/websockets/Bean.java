@@ -29,8 +29,12 @@ public class Bean {
 		return dbsession.getKundenSpiegelZiele();
 	}
 
-	public JSONObject getPositions(int zielid) {
-		return dbsession.getPositions(zielid);
+	public JSONObject getPositionsDiagramm(int zielid) {
+		return dbsession.getPositionsDiagramm(zielid);
+	}
+
+	public JSONObject getPositionsTableData(int zielid) {
+		return dbsession.getPositionsTableData(zielid);
 	}
 
 	public Bean() {

@@ -57,6 +57,8 @@ public class Position implements Serializable {
 	private boolean loesch; // deaktivieren
 
 	public final static SimpleDateFormat simpleDatetimeFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+	public final static SimpleDateFormat simpleDatetimeFormatZeit = new SimpleDateFormat("HH:mm");
+	public final static SimpleDateFormat simpleDatetimeFormatDatum = new SimpleDateFormat("dd.MM.yy");
 
 	// {"topic":"simago/compass/74-DA-38-3E-E8-3C","time":"26.04.2017
 	// 09:31:17","cmd":"save","roll":-16,"dir":13,"mirrorid":"2","pitch":-20}

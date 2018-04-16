@@ -37,8 +37,8 @@ public class PositionController {
 		init();
 	}
 
-	public Position getPosition() {
-		return position;
+	public Position getPosition(Long id) {
+		return service.find(id);
 	}
 
 	public List<Position> getPositions() {
