@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 @Stateless
 public class PositionService {
@@ -31,6 +32,31 @@ public class PositionService {
 
 	public void delete(Position position) {
 		em.remove(em.contains(position) ? position : em.merge(position));
+	}
+
+	public Ziel macToZiel(String s) {
+		Query q = em.createQuery("select s from Spiegel as s where s.mac=:MAC");
+		q.setParameter("MAC", s);
+		List<Spiegel> list = q.getResultList();
+		if (list.isEmpty()) {
+			return null;
+		}
+		Spiegel sp = list.get(0);
+
+		// ein oder das Ziel dieses Spiegels
+		q = em.createQuery("select z from Ziel as z where z.spiegel=:SPIEGEL");
+		q.setParameter("SPIEGEL", sp);
+		List<Ziel> listz = q.getResultList();
+		if (listz.isEmpty()) {
+			return null;
+		}
+		Ziel ziel = listz.get(0);
+		return ziel;
+	}
+
+	public int deleteAllPositions() {
+		return em.createQuery("delete from Position").executeUpdate();
+
 	}
 
 }

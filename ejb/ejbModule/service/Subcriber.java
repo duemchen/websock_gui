@@ -16,6 +16,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONObject;
 
 import database.DBSessionRegler;
+import database.PositionController;
 import de.horatio.common.HoraTime;
 
 @Startup
@@ -28,6 +29,8 @@ public class Subcriber implements MqttListener {
 
 	@Inject
 	private DBSessionRegler dbSession;
+	@Inject
+	private PositionController positionController;
 
 	@Inject
 	private MqttConnector mq;
@@ -40,11 +43,12 @@ public class Subcriber implements MqttListener {
 	@PostConstruct
 	private void init() {
 		System.out.println("init Subcriber ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+		positionController.fillpositons();
 		mq.registerMqttListener(this);
 		mq.subscribe("simago/system"); //
 		mq.subscribe("simago/zustand");
 		mq.subscribe("simago/compass/#");
-		// mq.subscribe("simago/camera");
+		mq.subscribe("simago/camera");
 		System.out.println("subscibe ok");
 
 		// mq.subscibe("simago/compass/#");

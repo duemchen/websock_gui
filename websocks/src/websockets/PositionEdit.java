@@ -1,6 +1,7 @@
 package websockets;
 
 import database.Position;
+import database.PositionController;
 
 public class PositionEdit {
 	private PositionController positionController;

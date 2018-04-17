@@ -115,6 +115,64 @@ public class DBSessionRegler {
 		}
 	}
 
+	public void fillExamples() {
+		Kunde kunde = new Kunde();
+		kunde.setName("Wolfgang Duemchen");
+		kunde.setKennung("123abc");
+		kunde.setLatitude(0);
+		kunde.setLongitude(0);
+		kunde.setOrt("Rheinsberg");
+		em.persist(kunde);
+
+		//
+		Spiegel spiegel = new Spiegel();
+		spiegel.setKunde(kunde);
+		spiegel.setName("Ost");
+		spiegel.setMac("80-1F-02-ED-FD-A6");
+		spiegel.setRuhe(0);
+		spiegel.setSonnenhoehe(10);
+		spiegel.setSonnenwinkelMorgens(0);
+		spiegel.setSonnenwinkelAbends(0);
+		spiegel.setWindmax(5.1);
+		spiegel.setWolkenmax(74);
+		spiegel.setWind(180);
+		em.persist(spiegel);
+		//
+		Ziel ziel;
+		//
+		ziel = new Ziel();
+		ziel.setSpiegel(spiegel);
+		ziel.setName("Waermekollektor");
+		em.persist(ziel);
+		ziel = new Ziel();
+		ziel.setSpiegel(spiegel);
+		ziel.setName("Kueche");
+		em.persist(ziel);
+		//
+		spiegel = new Spiegel();
+		spiegel.setKunde(kunde);
+		spiegel.setName("West");
+		spiegel.setMac("74-DA-38-3E-E8-3C");
+		spiegel.setRuhe(0);
+		spiegel.setSonnenhoehe(10);
+		spiegel.setSonnenwinkelMorgens(0);
+		spiegel.setSonnenwinkelAbends(0);
+		spiegel.setWindmax(5.1);
+		spiegel.setWolkenmax(74);
+		spiegel.setWind(180);
+		em.persist(spiegel);
+		//
+		ziel = new Ziel();
+		ziel.setSpiegel(spiegel);
+		ziel.setName("Waermekollektor");
+		em.persist(ziel);
+		ziel = new Ziel();
+		ziel.setSpiegel(spiegel);
+		ziel.setName("Kueche");
+		em.persist(ziel);
+
+	}
+
 }
 
 /*

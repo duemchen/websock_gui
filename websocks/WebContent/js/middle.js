@@ -1,39 +1,37 @@
 $(document)
 		.ready(
 				function() {
-					$("#fill").click(
-							function() {
-								var table = $('#example').dataTable();
-								table.api().clear().draw();
-//								var jdata = [ {
-//									'id' : 123,
-//									'Uhrzeit' : '08:00',
-//									'Datum' : '1.2.2018',
-//									'Delta' : '10%',
-//									'Aktiv' : true
-//								} ];
-//								var data = [
-//										[ '17', '12:00', '1.12.2018', '17%',
-//												true, ],
-//
-//										[ '12', '12:00', '1.12.2018', '12%',
-//												true, ],
-//										[ '123567', '12:00', '1.12.2018',
-//												'123%', true, ]
-//
-//								];
-//
-//								table.api().rows.add(data).draw();
-								console.log('fill', '');
-								var o = {
-									cmd : 'table',
-									zielid : gzielid
-								};
-								console.log('startFillDiagramme', JSON
-										.stringify(o));
-								sendMessage(o);
+					$("#fill").click(function() {
+						var table = $('#example').dataTable();
+						table.api().clear().draw();
+						// var jdata = [ {
+						// 'id' : 123,
+						// 'Uhrzeit' : '08:00',
+						// 'Datum' : '1.2.2018',
+						// 'Delta' : '10%',
+						// 'Aktiv' : true
+						// } ];
+						// var data = [
+						// [ '17', '12:00', '1.12.2018', '17%',
+						// true, ],
+						//
+						// [ '12', '12:00', '1.12.2018', '12%',
+						// true, ],
+						// [ '123567', '12:00', '1.12.2018',
+						// '123%', true, ]
+						//
+						// ];
+						//
+						// table.api().rows.add(data).draw();
+						console.log('fill', '');
+						var o = {
+							cmd : 'table',
+							zielid : gzielid
+						};
+						console.log('startFillDiagramme', JSON.stringify(o));
+						sendMessage(o);
 
-							});
+					});
 					var table = $('#example').dataTable({
 						"columnDefs" : [ {
 							"targets" : [ 0 ], // index
@@ -78,7 +76,7 @@ $(document)
 							table.$('tr.selected').removeClass('selected');
 							$(this).addClass('selected');
 						}
-						//table.fnUpdate('Zebra', this, 1);
+						// table.fnUpdate('Zebra', this, 1);
 					});
 
 					// relativ zur aufrufenden URL den WebSocket berechnen
@@ -102,8 +100,8 @@ $(document)
 						var msg = evt.data;
 						// console.log("Message received roh: " + msg);
 						var o = JSON.parse(msg);
-						console.log("Message received:" + JSON.stringify(o));
-						// console.log("cmd:" + JSON.stringify(o.cmd));
+						// console.log("Message received:" + JSON.stringify(o));
+						console.log("cmd:" + JSON.stringify(o.cmd));
 						if (o.cmd == 'kunden') {
 							var kunden = o.kunden;
 							console.log('Wskunden', kunden);
@@ -126,21 +124,25 @@ $(document)
 									"gespeichert " + JSON.stringify(o));
 						}
 						if (o.cmd == 'positionenTable') {
-							// Die Liste füllen							
+							// Die Liste füllen
 							var jpos = o.positionen;
-							console.log('fillToArray',jpos);
+							console.log('fillToArray', jpos);
 							var data = jPosToArray(jpos);
-							console.log('arr',data);
+							console.log('arr', data);
 							table.api().rows.add(data).draw();
 							console.log('fill ready');
 						}
 						if (o.cmd == 'edit') {
-							var id=o.id;
-							var loesch=o.loesch;
-							var row=o.row;							
+							var id = o.id;
+							var loesch = o.loesch;
+							var row = o.row;
 							table.fnUpdate(loesch, row, 4);
 						}
-
+						if (o.cmd == 'bild') {
+							// TODO Rahmen verändern je Bild
+							var s = "data:image/png;base64," + o.data;
+							$('#bild').attr("src", s);
+						}
 					};
 					ws.onclose = function() {
 						$('#xwsmessage').html('websocket is closed.');
@@ -289,21 +291,20 @@ function fillDiagramme(data) {
 	drawChartjsonA(jo.a)
 }
 
-function jPosToArray(target){	
-    var arr = [];
-    $.each(target, function(i, e){
-    	var item=[];
-//        $.each(e, function(key, val){
-//            item.push(val);
-//        });
-    	item.push(e.id);
-    	item.push(e.zeit);
-    	item.push(e.datum);
-    	item.push(e.delta);
-    	item.push(e.loesch);
-        arr.push(item);
-    	
-    });
-    return arr;		
-}
+function jPosToArray(target) {
+	var arr = [];
+	$.each(target, function(i, e) {
+		var item = [];
+		// $.each(e, function(key, val){
+		// item.push(val);
+		// });
+		item.push(e.id);
+		item.push(e.zeit);
+		item.push(e.datum);
+		item.push(e.delta);
+		item.push(e.loesch);
+		arr.push(item);
 
+	});
+	return arr;
+}

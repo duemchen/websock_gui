@@ -19,11 +19,13 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.jboss.logging.Logger;
 import org.json.JSONObject;
 
+import database.PositionController;
 import database.Ziel;
 import service.MqttConnector;
 import service.MqttListener;
 
 @Stateful
+// @SessionScoped
 @LocalBean // wegen implements
 @ServerEndpoint("/ws")
 
@@ -37,8 +39,13 @@ public class WSEndpoint implements SpeicherCallback, MqttListener { // implement
 	@Inject
 	private PositionController positionController;
 
+	private MqttConnector mq;
+
 	@Inject
-	MqttConnector mq;
+	public void setMqttConnector(MqttConnector mq) {
+		this.mq = mq;
+		mq.registerMqttListener(this);
+	}
 
 	@Resource(lookup = "java:jboss/ee/concurrency/factory/MyManagedThreadFactory")
 	private ManagedThreadFactory threadFactory;
@@ -48,7 +55,7 @@ public class WSEndpoint implements SpeicherCallback, MqttListener { // implement
 	// @PostConstruct
 	// private void init() {
 	// System.out.println("wsEndpoint Created. mqtt");
-	// mq.registerMqttListener(this);
+	// // mq.registerMqttListener(this);
 	// }
 
 	@Override
@@ -57,7 +64,6 @@ public class WSEndpoint implements SpeicherCallback, MqttListener { // implement
 			// System.out.println(topic + " WSEndpoint onMessageMQTT " +
 			// message);
 			System.out.println("Bild " + System.currentTimeMillis());
-			String s = "bild";
 			JSONObject j = new JSONObject();
 			j.put("cmd", "bild"); // Speichern
 			j.put("data", new String(message.getPayload()));
@@ -134,6 +140,7 @@ public class WSEndpoint implements SpeicherCallback, MqttListener { // implement
 	@OnClose
 	public void close(Session session, CloseReason c) {
 		// log.info("Closing WebSession:" + session.getId());
+		mq.unregisterMqttListener(this);
 		this.session = null;
 	}
 
