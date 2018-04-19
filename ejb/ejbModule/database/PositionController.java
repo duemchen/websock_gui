@@ -52,11 +52,30 @@ public class PositionController {
 		return null;
 	}
 
-	public void fillpositons() {
+	/**
+	 *  
+	 */
+	public void fillPositions() {
+		String dir = getStandaloneDir();
+		String f1 = dir + "/" + "74-DA-38-3E-E8-3C.txt";
+		String f2 = dir + "/" + "80-1F-02-ED-FD-A6.txt";
+		if (!HoraFile.fileExists(f1))
+			return;
+		if (!HoraFile.fileExists(f2))
+			return;
+		// beides einmalig neu importieren und dann umbenennen
 		service.deleteAllPositions();
-		fileToPositions("74-DA-38-3E-E8-3C.txt");
-		fileToPositions("80-1F-02-ED-FD-A6.txt");
+		fileToPositions(f1);
+		fileToPositions(f2);
 
+	}
+
+	private String getStandaloneDir() {
+		// System.out.println("jboss.server.home.dir " +
+		// System.getProperty("jboss.server.home.dir"));
+		// System.out.println("jboss.server.base.dir " +
+		// System.getProperty("jboss.server.base.dir"));
+		return System.getProperty("jboss.server.base.dir");
 	}
 
 	void fileToPositions(String filename) {
@@ -73,7 +92,7 @@ public class PositionController {
 
 				Position pos = new Position();
 				s = jo.getString("time");
-				Date datum = HoraTime.strToDateTime(s);
+				Date datum = HoraTime.strToDateTimeBuchungsSatz(s);// sekunden
 				pos.setDatum(datum);
 				s = jo.getString("topic");
 				int i = s.lastIndexOf("/");
@@ -95,7 +114,7 @@ public class PositionController {
 				System.out.println(e);
 			}
 		}
-
+		HoraFile.renameFile(filename, filename + ".bak");
 	}
 
 }

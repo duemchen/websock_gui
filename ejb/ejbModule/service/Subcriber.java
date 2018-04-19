@@ -43,7 +43,7 @@ public class Subcriber implements MqttListener {
 	@PostConstruct
 	private void init() {
 		System.out.println("init Subcriber ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-		positionController.fillpositons();
+		positionController.fillPositions();
 		mq.registerMqttListener(this);
 		mq.subscribe("simago/system"); //
 		mq.subscribe("simago/zustand");

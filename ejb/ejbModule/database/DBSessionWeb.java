@@ -173,25 +173,36 @@ public class DBSessionWeb {
 	 * @return
 	 */
 	public JSONObject getPositionsTableData(int zielid) {
-		Query q = em.createQuery("select p from Position as p where p.ziel=:ZIEL order by p.id");
 		Ziel ziel = getZiel(zielid);
+
+		// nur die aktiven Messpunkte für die Näherungsfunktion
+		Query q = em.createQuery("select p from Position as p where (p.loesch=0) and p.ziel=:ZIEL order by p.id");
 		q.setParameter("ZIEL", ziel);
-		List<Position> list = q.getResultList();
+		List<Position> listFunktion = q.getResultList();
+		System.out.println("listFunktion: " + listFunktion.size());
+		// alle Messpunkte für die Anzeige
+		q = em.createQuery("select p from Position as p where p.ziel=:ZIEL order by p.id");
+		q.setParameter("ZIEL", ziel);
+		List<Position> listShow = q.getResultList();
+		System.out.println("listShow: " + listShow.size());
 		// Sonnenstand zu Zielstand darstellen. Müsste ja rein linear sein.
 		// Dazu die Sonnenformel
 		SunPos sp = new SunPos();
-
-		PolynomialFunction fAzimuth = KurvenFormel.getKurveAzimuth(list, sp);
-		PolynomialFunction fZenith = KurvenFormel.getKurveZenith(list, sp);
+		PolynomialFunction fAzimuth = KurvenFormel.getKurveAzimuth(listFunktion, sp);
+		PolynomialFunction fZenith = KurvenFormel.getKurveZenith(listFunktion, sp);
 
 		JSONArray positionen = new JSONArray();
-		for (Position pos : list) {
+		for (Position pos : listShow) {
 			Date d = pos.getDatum();
 			JSONObject jo = new JSONObject();
 			jo.put("id", pos.getId());
 			jo.put("zeit", Position.simpleDatetimeFormatZeit.format(d));
 			jo.put("datum", Position.simpleDatetimeFormatDatum.format(d));
-			jo.put("delta", 10); // TODO beide deltas?
+
+			double af = fZenith.value(sp.getZenith(d));
+			double a = pos.getProjectionXy();
+			double delta = af - a;
+			jo.put("delta", String.format("%.1f", delta));
 			jo.put("loesch", pos.isLoesch());
 			positionen.put(jo);
 		}

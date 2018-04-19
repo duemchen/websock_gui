@@ -38,18 +38,28 @@ $(document)
 							"visible" : false,
 							"searchable" : false
 						}, {
-							"targets" : [ 1 ], // löschflag
+							"targets" : [ 1 ], // 
 							"visible" : true
 						}, {
-							"targets" : [ 2 ], // löschflag
+							"targets" : [ 2 ], // 
 							"visible" : true
 						}, {
-							"targets" : [ 3 ], // löschflag
+							"targets" : [ 3 ], // 
 							"visible" : true
 						}, {
 							"targets" : [ 4 ], // löschflag
 							"visible" : false
-						} ]
+						} ],
+
+						"createdRow" : function(row, data, dataIndex) {							
+							if (data[4]) {
+								$(row).addClass('stroke');
+							} else {
+								$(row).removeClass('stroke');
+							}
+
+						}
+
 					});
 					$('#example tbody').on('click', 'tr', function() {
 						// zeilenid senden um löschen zu schalten.
@@ -69,13 +79,12 @@ $(document)
 						var s = JSON.stringify(o);
 						console.log('edit', s);
 						sendMessage(o);
-						// TODO rückantwort websock eintragen in der Zeile
-						if ($(this).hasClass('selected')) {
-							$(this).removeClass('selected');
-						} else {
-							table.$('tr.selected').removeClass('selected');
-							$(this).addClass('selected');
-						}
+						// if ($(this).hasClass('selected')) {
+						// $(this).removeClass('selected');
+						// } else {
+						// table.$('tr.selected').removeClass('selected');
+						// $(this).addClass('selected');
+						// }
 						// table.fnUpdate('Zebra', this, 1);
 					});
 
@@ -136,7 +145,15 @@ $(document)
 							var id = o.id;
 							var loesch = o.loesch;
 							var row = o.row;
-							table.fnUpdate(loesch, row, 4);
+							table.fnUpdate(loesch, row, 4, false);
+							var $r = table.api().rows(row).nodes().to$();
+							console.log('$r',$r,table.api().rows(row));
+							
+							if (loesch) {
+								$r.addClass('stroke');
+							} else {
+								$r.removeClass('stroke');
+							}
 						}
 						if (o.cmd == 'bild') {
 							// TODO Rahmen verändern je Bild
