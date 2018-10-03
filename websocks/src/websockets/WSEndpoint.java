@@ -1,6 +1,7 @@
 package websockets;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.annotation.Resource;
 import javax.ejb.LocalBean;
@@ -21,6 +22,7 @@ import org.json.JSONObject;
 
 import database.PositionController;
 import database.Ziel;
+import de.horatio.common.HoraTime;
 import service.MqttConnector;
 import service.MqttListener;
 
@@ -33,6 +35,9 @@ public class WSEndpoint implements SpeicherCallback, MqttListener { // implement
 																	// MqttListener
 	// {
 	Logger log = Logger.getLogger(this.getClass());
+	// aus diesem Zeitraum die Messwerte benutzen
+	// private Date von = HoraTime.strToDate("8.9.2018");
+	// private Date bis = HoraTime.strToDate("14.9.2018");
 
 	@Inject
 	private Bean bean;
@@ -52,6 +57,8 @@ public class WSEndpoint implements SpeicherCallback, MqttListener { // implement
 
 	private Session session = null;
 
+	private boolean firsttime = true;;
+
 	// @PostConstruct
 	// private void init() {
 	// System.out.println("wsEndpoint Created. mqtt");
@@ -63,24 +70,36 @@ public class WSEndpoint implements SpeicherCallback, MqttListener { // implement
 		if (topic.contains("simago/camera")) {
 			// System.out.println(topic + " WSEndpoint onMessageMQTT " +
 			// message);
-			System.out.println("Bild " + System.currentTimeMillis());
+			// System.out.println("Bild " + System.currentTimeMillis());
 			JSONObject j = new JSONObject();
-			j.put("cmd", "bild"); // Speichern
+			j.put("cmd", "bild"); // Bild weiterreichen via WebSock
 			j.put("data", new String(message.getPayload()));
 			sendMessage(j.toString());
+		}
+		if (topic.contains("simago/compass")) {
+			// System.out.println(topic + " WSEndpoint onMessageMQTT " +
+			// message);
+			// Regler einsprung
 		}
 	}
 
 	@OnMessage
-	public String receiveMessage(String message, Session session) {
+	public String receiveMessage(String message, Session session) throws InterruptedException {
 		// Received : {"cmd":"save","ziel":"3","spiegel":"2"}
 		log.info("Received : " + message);// + ", session:" + session.getId());
 		// System.out.println(positionController.getPositions());
 		this.session = session;
 		JSONObject o = new JSONObject(message);
 		String s = o.getString("cmd");
+
 		if (s.equals("positionen")) {
-			return bean.getPositionsDiagramm(o.getInt("zielid")).toString();
+			if (firsttime) {
+				Thread.sleep(1000);// wegen load googlecharts
+				firsttime = false;
+			}
+			Date von = HoraTime.strToDate(o.getString("von"));
+			Date bis = HoraTime.strToDate(o.getString("bis"));
+			return bean.getPositionsDiagramm(o.getInt("zielid"), von, bis).toString();
 		}
 		if (s.equals("save")) {
 			// zu diesem Spiegel die Stellung speichern

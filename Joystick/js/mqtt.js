@@ -44,7 +44,7 @@ function MQTTconnect() {
 }
 
 function onConnect() {
-    $('#inhalt').val('Connected to ' + host + ':' + port + path);
+    $('#inhalt').val('Connected to IP ' + host + ':' + port + path);
     // Connection succeeded; subscribe to our topic
     //mqtt.subscribe(topic, {qos: 2});		
     //mqtt.subscribe('simago/tinker', {qos: 0});
@@ -52,15 +52,16 @@ function onConnect() {
     //mqtt.subscribe('simago/joy', {qos: 0});
     //mqtt.subscribe('simago/veranda', {qos: 0});
     //mqtt.subscribe('simago/heizung', {qos: 0});
-    mqtt.subscribe('simago/camera', {qos: 0});
+    //mqtt.subscribe('simago/camera', {qos: 0});
     //mqtt.subscribe('simago/compass/74-DA-38-3E-E8-3C', {qos: 0});
     //mqtt.subscribe('simago/compass', {qos: 0});
-    mqtt.subscribe(ziel, {qos: 0});
+    //mqtt.subscribe(ziel, {qos: 0});
     //mqtt.subscribe('simago/compass/#', {qos: 0});
-    mqtt.subscribe('simago/joy/#', {qos: 0});
-    mqtt.subscribe('simago/save/#', {qos: 0});
+    //mqtt.subscribe('simago/joy/#', {qos: 0});
+    //mqtt.subscribe('simago/save/#', {qos: 0});
     mqtt.subscribe('simago/zustand', {qos: 0});
-    mqtt.subscribe('simago/mirrors', {qos: 0});
+    //mqtt.subscribe('simago/mirrors', {qos: 0});
+	mqtt.subscribe('simago/wind', {qos: 0});	
     $('#topic').val('warte auf Message...');
 
 }
@@ -134,6 +135,13 @@ function onMessageArrived(message) {
         $('#selectMirror').selectmenu('refresh');
         $('#selectMirror').change();
     }
+	
+	if (topic == 'simago/wind') {
+        console.log(topic, payload);
+        $('#windmesser').val(payload);
+
+    }
+
 
 
 

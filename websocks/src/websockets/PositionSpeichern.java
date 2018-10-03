@@ -17,7 +17,7 @@ import service.MqttListener;
 /**
  * @author duemchen
  * 
- *         beim Speichern wird ein Tread erzeugt, der auf das nächste
+ *         beim Speichern wird ein Thread erzeugt, der auf das nächste
  *         PositionsEreignis wartet, Dann speichert, rückinformiert und beendet.
  * 
  *

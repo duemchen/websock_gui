@@ -133,7 +133,7 @@ public class KurvenFormel {
 			// sonne zu spiegel
 			Date d = pos.getDatum();
 			// Projektion
-			a = pos.getProjectionXy();
+			a = pos.getProjectionXy(pos.getZiel().getId());
 			pList.add(new Point(sp.getZenith(d), a));
 		}
 		PolynomialFunction f = KurvenFormel.getPolynomialFit(pList);

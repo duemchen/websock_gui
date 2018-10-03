@@ -1,7 +1,7 @@
-//host = '192.168.10.51';
-//port=80;
-host = 'duemchen.feste-ip.net';
-port=18386; 
+host = '192.168.10.51';
+port=80;
+//host = 'duemchen.feste-ip.net';
+//port=18386; 
 topic = '#';		// topic to subscribe to
 useTLS = false;
 username = null;

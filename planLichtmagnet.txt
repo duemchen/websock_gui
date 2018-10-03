@@ -1,0 +1,54 @@
+1. HandyApp
+
+Windstärke gemessen
+Windstärke WS
+Cloud WS
+
+Temperatur Speicher
+Temperatur WW
+
+(von hier aus Spiegelwahl)
+
+
+2. HandyApp
+
+Spiegelwahl
+
+KameraBild
+Joystick
+Speichern
+
+
+3. Regler
+
+Messungen darstellen
+Punkte deaktivieren
+Kurve berechnen, drüberlegen, manipulieren
+
+
+4. Bildverarbeitung/Korrektur
+
+Einzelbild abholen ok.
+
+Sonnenschein-Erkennung (Schattenwurf per Messobjekt in der Nähe der Kamera)
+Durchschimmernde weisse Fläche mit Schattenwurfgitter davor. Wenn Sonne dann Raster.
+
+Lichtflecken  bewerten  (ok, links rechts hoch runter)
+Kommando 
+Lichtflecken  bewerten  (ok, links rechts hoch runter)
+...
+Position merken, wegdrehen
+Spiegel wechseln
+
+Wenn eingerastet
+
+Normalen Sonnenverlauf vorausgesetzt:
+- Abwarten, bis am linken Rand
+- Nachziehen zum rechten Rand
+- Höhenkorrektur dieses Flecks.
+nächsten Spiegel ebenso.
+
+
+
+
+

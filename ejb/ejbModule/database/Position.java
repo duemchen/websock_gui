@@ -59,6 +59,7 @@ public class Position implements Serializable {
 	public final static SimpleDateFormat simpleDatetimeFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	public final static SimpleDateFormat simpleDatetimeFormatZeit = new SimpleDateFormat("HH:mm");
 	public final static SimpleDateFormat simpleDatetimeFormatDatum = new SimpleDateFormat("yy-MM-dd");
+	public final static SimpleDateFormat simpleDatetimeFormatZD = new SimpleDateFormat("dd.MM.yy HH:mm");
 
 	// {"topic":"simago/compass/74-DA-38-3E-E8-3C","time":"26.04.2017
 	// 09:31:17","cmd":"save","roll":-16,"dir":13,"mirrorid":"2","pitch":-20}
@@ -171,7 +172,7 @@ public class Position implements Serializable {
 	}
 
 	public String toStringAZ() {
-		return "azimuth:" + getX180() + ", zenith:" + getProjectionXy() + " ]";
+		return "azimuth:" + getX180() + ", zenith:" + getProjectionXy(id) + " ]";
 	}
 
 	public long getX180() {
@@ -190,10 +191,32 @@ public class Position implements Serializable {
 	 * 
 	 * @return
 	 */
-	public double getProjectionXy() {
-		double result = Math.asin(Math.sin(Math.toRadians(-getY())) * Math.cos(Math.toRadians(Math.PI * getZ())));
+	public double getProjectionXy3() {
+		double FAKTOR = 1.6 * Math.PI;
+		double result = Math.asin(Math.sin(Math.toRadians(-getY())) * Math.cos(Math.toRadians(getZ() * FAKTOR)));
+		result = Math.toDegrees(result);
+		result = Math.round(100.0 * result) / 100.0;
+		// result = -getY();
+		return result;
+	}
+
+	public double getProjectionXy6() {
+		double FAKTOR = 1;// 2 * Math.PI;
+		double result = Math.asin(Math.sin(Math.toRadians(-getY())) * Math.cos(Math.toRadians(getZ() * FAKTOR)));
 		result = Math.toDegrees(result);
 		result = Math.round(100.0 * result) / 100.0;
 		return result;
 	}
+
+	public double getProjectionXy(long zielID) {
+		if (zielID == 3)
+			return getProjectionXy3();
+		else
+			return getProjectionXy6();
+	}
+
+	public String getZP() {
+		return simpleDatetimeFormatZD.format(datum);
+	}
+
 }

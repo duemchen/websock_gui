@@ -21,10 +21,23 @@ duemchen.feste-ip.net:31498 geht auf 8081
         <![endif]-->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
-//  google.charts.load('current', {packages: ['corechart']});
+  google.charts.load('current', {packages: ['corechart']});
+//google.charts.load('current', {'packages':['bar', 'corechart', 'table']});
 //  google.charts.setOnLoadCallback(drawChart);  
 </script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquerymobile/1.4.5/jquery.mobile.min.js"></script>
+<!--
+
+
+
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+<script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+-->
 <script src="js/charts.js" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.css" />
 <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.16/datatables.min.js"></script>
@@ -127,6 +140,9 @@ duemchen.feste-ip.net:31498 geht auf 8081
                 </svg>
       </div>
     </div>
+    <div>
+      <button id='save' class="btn">Speichern</button>
+    </div>
     <div id="kunde" style="margin: 10px; float: left;">
       <label for="selkunde">Kunde</label> <select id="selkunde" class="selectpicker">
       </select>
@@ -139,14 +155,23 @@ duemchen.feste-ip.net:31498 geht auf 8081
       <label for="selziel">Ziel</label> <select id="selziel" class="selectpicker">
       </select>
     </div>
-    <div>
-      <button id='save' class="btn">Speichern</button>
+    <div style="clear: both;"></div>
+    <div  style="margin: 10px; float: left;">
+      <input type="text" id="von">
+    </div>
+    <div  style="margin: 10px; float: left;">
+      <input type="text" id="bis" >
+    </div>
+    <div   style="margin: 10px; float: left;">
+      <button id='refresh' class="btn">Refresh</button>
     </div>
     <div style="clear: both;"></div>
     <div id='chart_x' style="height: 350px; width: 400px; float: left"></div>
+    <div id='chart_a' style="height: 350px; width: 400px; float: left"></div>
+    <div style="clear: both;"></div>
     <div id='chart_z' style="height: 350px; width: 400px; float: left"></div>
     <div id='chart_y' style="height: 350px; width: 400px; float: left"></div>
-    <div id='chart_a' style="height: 350px; width: 400px; float: left"></div>
+    <div style="clear: both;"></div>
     <button id='btndel' class="btn">Deaktivieren</button>
   </div>
   <!-- jQuery (wird für Bootstrap JavaScript-Plugins benötigt) -->

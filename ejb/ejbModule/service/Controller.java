@@ -39,6 +39,7 @@ public class Controller implements Runnable {
 	}
 
 	private final String MQTTPATH = "simago/joy/xx-";
+	// private final String MQTTPATH = "simago/joy/";
 
 	private String mac;
 	private DBSessionRegler dbSession;
@@ -128,7 +129,8 @@ public class Controller implements Runnable {
 
 		CMD cmd = CMD.LINKS;
 		// erst x, dann y stellen.
-		cmd = getCmd(pSoll.getX(), pSoll.getY(), istPos.getX180(), istPos.getProjectionXy());
+
+		cmd = getCmd(pSoll.getX(), pSoll.getY(), istPos.getX180(), istPos.getProjectionXy(ziel.getId()));
 		if (cmd == CMD.NEUTRAL)
 			return;
 		JSONObject jo = new JSONObject();
@@ -179,14 +181,14 @@ public class Controller implements Runnable {
 	 */
 	private CMD getCmd(double azimuthSoll, double zenithSoll, double azimuthIst, double zenithIst) {
 		CMD result = CMD.NEUTRAL;
-		if (Math.abs(azimuthSoll - azimuthIst) > 2) {
+		if (Math.abs(azimuthSoll - azimuthIst) > 1) {
 			if (azimuthSoll > azimuthIst) {
 				result = CMD.RECHTS;
 			} else {
 				result = CMD.LINKS;
 			}
 		} else {
-			if (Math.abs(zenithSoll - zenithIst) > 2) {
+			if (Math.abs(zenithSoll - zenithIst) > 1) {
 				if (zenithSoll > zenithIst) {
 					result = CMD.HOCH;
 				} else {

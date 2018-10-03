@@ -1,5 +1,7 @@
 package websockets;
 
+import java.util.Date;
+
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 
@@ -29,8 +31,8 @@ public class Bean {
 		return dbsession.getKundenSpiegelZiele();
 	}
 
-	public JSONObject getPositionsDiagramm(int zielid) {
-		return dbsession.getPositionsDiagramm(zielid);
+	public JSONObject getPositionsDiagramm(int zielid, Date von, Date bis) {
+		return dbsession.getPositionsDiagramm(zielid, von, bis);
 	}
 
 	public JSONObject getPositionsTableData(int zielid) {

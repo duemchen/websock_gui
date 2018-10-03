@@ -4,7 +4,7 @@
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
     <head>
-        <title>Joystick Mosquitto</title>
+        <title>Mosquitto Info Page</title>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,6 +17,14 @@
         <link rel="stylesheet" href="css/main.css">
 
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+        <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+        <!--        <script src="js/jquery.min.js" type="text/javascript"></script> -->
+        <script src="js/mqttws31.js" type="text/javascript"></script>
+        <script src="js/config.js" type="text/javascript"></script>        
+        <script src="js/vendor/modernizr-2.6.2.min.js"></script>
+        <script src="js/mqtt.js" type="text/javascript"></script>
     </head>
     <body>
         <!--[if lt IE 7]>
@@ -26,32 +34,63 @@
         <!-- Add your site or application content here -->
         <!--<p>Joystick</p>-->
         <div>
-            <div id="joystick" style="width:90%;display: block; margin-left: auto; margin-right: auto">
-                <svg width="90%" height="100%" viewBox="0 0 100 100">
-                <defs>
-                <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style="stop-color:rgb(16,16,16);stop-opacity:1" />
-                <stop offset="100%" style="stop-color:rgb(240,240,240);stop-opacity:1" />
-                </linearGradient>
-                <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style="stop-color:rgb(240,240,240);stop-opacity:1" />
-                <stop offset="100%" style="stop-color:rgb(16,16,16);stop-opacity:1" />
-                </linearGradient>
-                <linearGradient id="grad3" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%"   style="stop-color:rgb(168,168,168);stop-opacity:1" />
-                <stop offset="100%" style="stop-color:rgb(239,239,239);stop-opacity:1" />
-                </linearGradient>
-                </defs>
-                <circle cx="50" cy="50" r="50" fill="url(#grad1)" />
-                <circle cx="50" cy="50" r="48" fill="url(#grad2)" stroke="black" stroke-width="1.5px" />
-                <circle cx="50" cy="50" r="46" fill="url(#grad3)" /> 
-                <circle id="cmitte" cx="50" cy="50" r="15" fill="#cccccc" stroke="black" stroke-width="1px" onclick="saveme();" />
-                <path id="phoch"   d="M50,5  65,30 35,30Z" fill="rgba(0,0,0,0.6)" onclick="movemi(richtung.HOCH);" />
-                <path id="prunter" d="M50,95 65,70 35,70Z" fill="rgba(0,0,0,0.6)" onclick="movemi(richtung.RUNTER)" />
-                <path id="plinks"  d="M 5,50 30,65 30,35Z" fill="rgba(0,0,0,0.5)" onclick="movemi(richtung.LINKS)" />
-                <path id="prechts" d="M95,50 70,64 70,35Z" fill="rgba(0,0,0,0.5)" onclick="movemi(richtung.RECHTS)" />
-                </svg>
+            <div>               
+                <input type='text' id='topic' disabled />
             </div>
-        </div>             
+            <div>                
+                <input type='text' id='inhalt' size="2777" disabled />
+            </div>
+
+            <div>
+                <img id='bild' alt="Embedded Image" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIA" />
+            </div>
+            <div>                
+                <input type='text' id='zustand' size="27" disabled />
+            </div>
+            <div>                
+                <input type='text' id='windmesser' size="27" disabled />
+            </div>
+			
+
+            <div>
+                <label for="select-choice-0" class="select">Select your Mirror:</label>
+                <select name="select-choice-0" id="selectMirror">
+                    <option value="standard">Standard: 7 day</option>
+                    <option value="rush">Rush: 3 days</option>
+                    <option value="express">Express: next day</option>
+                    <option value="overnight">Overnight</option>
+                </select>
+            </div>
+
+
+            <div>
+                <input type="button" id="xtop" value="up">
+                <input type="button" id="down" value="down">
+                <input type="button" id="left" value="left">
+                <input type="button" id="right" value="right">
+            </div>
+            </br>
+            <div>
+                <input type="button" id="save" value="Speichern">
+            </div>            
+        </div>        
+
+
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+        <script src="js/plugins.js"></script>
+        <script src="js/main.js"></script>
+    
+        <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. 
+        <script>
+            var _gaq = [['_setAccount', 'UA-XXXXX-X'], ['_trackPageview']];
+            (function (d, t) {
+                var g = d.createElement(t), s = d.getElementsByTagName(t)[0];
+                g.src = '//www.google-analytics.com/ga.js';
+                s.parentNode.insertBefore(g, s)
+            }(document, 'script'));
+        </script>
+        -->
     </body>
 </html>

@@ -57,6 +57,7 @@ public class PositionController {
 	 */
 	public void fillPositions() {
 		String dir = getStandaloneDir();
+		System.out.println("Import Dir für Messwerte Neuimport: \n" + dir);
 		String f1 = dir + "/" + "74-DA-38-3E-E8-3C.txt";
 		String f2 = dir + "/" + "80-1F-02-ED-FD-A6.txt";
 		if (!HoraFile.fileExists(f1))

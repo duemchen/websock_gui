@@ -39,7 +39,7 @@ public class DBSessionWeb {
 		}
 		JSONArray jKunden = new JSONArray();
 		for (Kunde kunde : listK) {
-			q = em.createQuery("select p from Spiegel as p where p.kunde=:KUNDE");
+			q = em.createQuery("select p from Spiegel as p where p.kunde=:KUNDE order by name");
 			q.setParameter("KUNDE", kunde);
 			List<Spiegel> list = q.getResultList();
 			JSONArray jl = new JSONArray();
@@ -77,85 +77,36 @@ public class DBSessionWeb {
 		return result;
 	}
 
-	public JSONObject getPositionsDiagramm(int zielid) {
-		Query q = em.createQuery("select p from Position as p where p.loesch=False and p.ziel=:ZIEL");
+	public JSONObject getPositionsDiagramm(int zielid, Date von, Date bis) {
+		Query q = em.createQuery(
+				"select p from Position as p where p.loesch=False and p.ziel=:ZIEL and datum >= :VON and datum <= :BIS ");
 		Ziel ziel = getZiel(zielid);
 		q.setParameter("ZIEL", ziel);
+		q.setParameter("VON", von);
+		q.setParameter("BIS", bis);
 		List<Position> list = q.getResultList();
-		// Sonnenstand zu Zielstand darstellen. Müsste ja rein linear sein.
-		// Dazu die Sonnenformel
-		SunPos sp = new SunPos();
+		SpiegelGeometrie sg = new SpiegelGeometrie(zielid, list);
+		JSONObject result = sg.getDiagramm();
+		return result;
+	}
 
-		PolynomialFunction fAzimuth = KurvenFormel.getKurveAzimuth(list, sp);
-		PolynomialFunction fZenith = KurvenFormel.getKurveZenith(list, sp);
-
-		//
-		JSONArray jx = new JSONArray();
-		JSONArray jy = new JSONArray();
-		JSONArray jz = new JSONArray();
-		JSONArray ja = new JSONArray();
-
-		for (Position pos : list) {
-			Date d = pos.getDatum();
-			// sp.printSonnenstand(d);
-			JSONObject jo = new JSONObject();
-			jo.put("X", sp.getAzimuth(d));
-			jo.put("x", pos.getX180());
-			jo.put("xx", fAzimuth.value(sp.getAzimuth(d)));
-			jo.put("id", pos.getId());
-			jx.put(jo);
-			//
-			JSONObject joo = new JSONObject();
-			joo.put("Y", sp.getZenith(d));
-			joo.put("y", pos.getY() * -1);
-			joo.put("id", pos.getId());
-			jy.put(joo);
-
-			JSONObject jooo = new JSONObject();
-			jooo.put("X", sp.getAzimuth(d));
-			jooo.put("z", pos.getZ());
-			jooo.put("id", pos.getId());
-			jz.put(jooo);
-
-			JSONObject jaa = new JSONObject();
-			jaa.put("Y", sp.getZenith(d));
-			// Projektion auf die xz Ebene
-			double a = pos.getProjectionXy();
-			jaa.put("a", a);
-			jaa.put("aa", fZenith.value(sp.getZenith(d)));
-			jaa.put("id", pos.getId());
-			ja.put(jaa);
-
-			// TODO dateformat mit rein. Ziel: Punkt markieren und in den Kurven
-			// anzeigen
-			// Xx yY Tagesverlauf XY
-		}
-
-		JSONObject j = new JSONObject();
-		j.put("cmd", "positionen");
-		j.put("x", jx);
-		j.put("y", jy);
-		j.put("z", jz);
-		j.put("a", ja);
-
-		// System.out.println("\n");
-		// sp.printSonnenstand(HoraTime.strToDateTime("24.03.2017 12:00"));
-		// sp.printSonnenstand(HoraTime.strToDateTime("25.03.2017 12:00"));
-		// //winterzeit
-		// sp.printSonnenstand(HoraTime.strToDateTime("26.03.2017 13:00"));
-		// //sommerzeit
-		// sp.printSonnenstand(HoraTime.strToDateTime("27.03.2017 13:00"));
-		// System.out.println("\n");
-		//
-		// sp.printSonnenstand(HoraTime.strToDateTime("24.03.2017 11:00"));
-		// sp.printSonnenstand(HoraTime.strToDateTime("24.03.2017 12:00"));
-		// sp.printSonnenstand(HoraTime.strToDateTime("24.03.2017 13:00"));
-		// System.out.println("\n");
-		// sp.printSonnenstand(HoraTime.strToDateTime("27.03.2017 11:00"));
-		// sp.printSonnenstand(HoraTime.strToDateTime("27.03.2017 12:00"));
-		// sp.printSonnenstand(HoraTime.strToDateTime("27.03.2017 13:00"));
-		// sp.printSonnenstand(HoraTime.strToDateTime("27.03.2017 14:00"));
-		return j;
+	/**
+	 * @param zielid
+	 * @param zeitPunkt
+	 * @param von
+	 * @param bis
+	 * @return für den Regler die berechnete Sollpos holen.
+	 */
+	public Position getSollPos(int zielid, Date zeitPunkt, Date von, Date bis) {
+		Query q = em.createQuery(
+				"select p from Position as p where p.loesch=False and p.ziel=:ZIEL and datum >= :VON and datum <= :BIS ");
+		Ziel ziel = getZiel(zielid);
+		q.setParameter("ZIEL", ziel);
+		q.setParameter("VON", von);
+		q.setParameter("BIS", bis);
+		List<Position> list = q.getResultList();
+		SpiegelGeometrie sg = new SpiegelGeometrie(zielid, list);
+		return sg.getSollpos(zeitPunkt);
 	}
 
 	public Spiegel getSpiegel(int id) {
@@ -200,7 +151,7 @@ public class DBSessionWeb {
 			jo.put("datum", Position.simpleDatetimeFormatDatum.format(d));
 
 			double af = fZenith.value(sp.getZenith(d));
-			double a = pos.getProjectionXy();
+			double a = pos.getProjectionXy(zielid);
 			double delta = af - a;
 			jo.put("delta", String.format("%.1f", delta));
 			jo.put("loesch", pos.isLoesch());
