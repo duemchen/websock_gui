@@ -31,6 +31,7 @@ public class SpiegelGeometrie {
 		JSONArray jy = new JSONArray();
 		JSONArray jz = new JSONArray();
 		JSONArray ja = new JSONArray();
+		JSONArray jzeit = new JSONArray();
 
 		for (Position pos : list) {
 			Date d = pos.getDatum();
@@ -65,7 +66,19 @@ public class SpiegelGeometrie {
 			jaa.put("aa", fZenith.value(sp.getZenith(d))); // berechnete Wert
 															// aus CalcKurve
 			jaa.put("id", pos.getId());
+			jaa.put("zp", pos.getZP());
 			ja.put(jaa);
+
+			// Uhrzeit zu Höhe/Kipp mit tooltip datum
+			JSONObject jzeitWerte = new JSONObject();
+			jzeitWerte.put("T", pos.getUhrzeitDez()); // Stunden des Tages
+			jzeitWerte.put("x", pos.getX180());
+			// jzeitWerte.put("y", pos.getY() * -1);
+			jzeitWerte.put("y", pos.getY() / sp.getZenith(d));
+			jzeitWerte.put("z", pos.getZ());
+
+			jzeitWerte.put("zp", pos.getZP());
+			jzeit.put(jzeitWerte);
 
 			// TODO dateformat mit rein. Ziel: Punkt markieren und in den Kurven
 			// anzeigen
@@ -78,6 +91,7 @@ public class SpiegelGeometrie {
 		j.put("y", jy);
 		j.put("z", jz);
 		j.put("a", ja);
+		j.put("zeit", jzeit);
 
 		// System.out.println("\n");
 		// sp.printSonnenstand(HoraTime.strToDateTime("24.03.2017 12:00"));

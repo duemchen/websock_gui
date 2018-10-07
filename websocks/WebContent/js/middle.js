@@ -311,6 +311,9 @@ function fillDiagramme(data) {
 	console.log('fillDiagramme', data);
 	var jo = data;
 	console.log('jo', JSON.stringify(jo));
+	drawChartjsonTX(jo.zeit);
+	drawChartjsonTY(jo.zeit);
+	drawChartjsonTZ(jo.zeit);
 	drawChartjsonX(jo.x);
 	drawChartjsonY(jo.y);
 	drawChartjsonZ(jo.z)

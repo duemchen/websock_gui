@@ -6,9 +6,12 @@
 package database;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -217,6 +220,31 @@ public class Position implements Serializable {
 
 	public String getZP() {
 		return simpleDatetimeFormatZD.format(datum);
+	}
+
+	/**
+	 * 0...24.0
+	 * 
+	 * @return
+	 */
+	public double getUhrzeitDez() {
+		Calendar cal = new GregorianCalendar();
+		cal.setTime(getDatum());
+		double minuten = cal.get(Calendar.HOUR_OF_DAY) * 60 + cal.get(Calendar.MINUTE);
+		double tagTeil = minuten / (60 * 24);
+		System.out.println(tagTeil);
+
+		DecimalFormat f = new DecimalFormat("#0.00");
+		return Double.parseDouble(f.format(tagTeil * 24).replaceAll(",", "."));
+
+	}
+
+	public static void main(String[] args) {
+
+		Position pos = new Position();
+		pos.setDatum(new Date());
+		System.out.println(pos.getUhrzeitDez());
+
 	}
 
 }
