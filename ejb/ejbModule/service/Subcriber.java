@@ -59,6 +59,7 @@ public class Subcriber implements MqttListener {
 	@PreDestroy
 	private void cleanUp() {
 		mq.unSubscribe("simago/system");
+		mq.subscribe("simago/zustand");
 		mq.unSubscribe("simago/command");
 		mq.unSubscribe("simago/compass/#");
 		mq.subscribe("simago/camera");

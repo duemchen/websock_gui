@@ -27,7 +27,7 @@ public class DBSessionWeb {
 	}
 
 	public DBSessionWeb() {
-		// System.out.println("create DBSession");
+		// System.out.println("create DBSessionWeb");
 	}
 
 	public JSONObject getKundenSpiegelZiele() {
@@ -141,6 +141,7 @@ public class DBSessionWeb {
 		SunPos sp = new SunPos();
 		PolynomialFunction fAzimuth = KurvenFormel.getKurveAzimuth(listFunktion, sp);
 		PolynomialFunction fZenith = KurvenFormel.getKurveZenith(listFunktion, sp);
+	x	// TODO funktion für höhe F(Uhrzeit) approximieren ud einblenden
 
 		JSONArray positionen = new JSONArray();
 		for (Position pos : listShow) {

@@ -22,7 +22,7 @@ public class DBSessionRegler {
 	}
 
 	public DBSessionRegler() {
-		// System.out.println("create DBSession");
+		System.out.println("create DBSessionRegler");
 	}
 
 	public JSONObject getKundenSpiegelZiele() {

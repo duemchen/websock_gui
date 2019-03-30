@@ -343,18 +343,20 @@ function drawChartjsonTY(a) {
 	var data = new google.visualization.DataTable();
 	data.addColumn('number', 'Std');
 	data.addColumn('number', 'x');
+	
 	data.addColumn({
 		type : 'string',
 		role : 'tooltip',
 		name : 'zp'
 	});
+	//data.addColumn('number', 'yyy');
 	
 
 	gIndextoId = [];
 	a.forEach(function(zeile, index) {
 		// console.log(zeile.X + '.+.' + zeile.x);
 		data.addRow([ zeile.T, zeile.y, zeile.zp]);
-
+		//data.addRow([ zeile.T, zeile.y, zeile.zp, zeile.x]);
 		gIndextoId.push(zeile.id);
 	})
 
@@ -397,7 +399,7 @@ function drawChartjsonTY(a) {
 			1 : {
 				color : '#f3459d'
 			},
-
+			
 		},
 
 	};

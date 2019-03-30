@@ -36,6 +36,9 @@ public class Database implements MqttListener {
 
 	public Database() {
 		emf = javax.persistence.Persistence.createEntityManagerFactory("xyz");
+		// emf =
+		// javax.persistence.Persistence.createEntityManagerFactory("persistencemytma");
+
 		em = emf.createEntityManager();
 	}
 

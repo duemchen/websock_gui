@@ -60,10 +60,13 @@ public class PositionController {
 		System.out.println("Import Dir für Messwerte Neuimport: \n" + dir);
 		String f1 = dir + "/" + "74-DA-38-3E-E8-3C.txt";
 		String f2 = dir + "/" + "80-1F-02-ED-FD-A6.txt";
+		System.out.println(f1);
+		System.out.println(f2);
 		if (!HoraFile.fileExists(f1))
 			return;
 		if (!HoraFile.fileExists(f2))
 			return;
+		System.out.println("beides wird einmalig neu importieren und dann umbenannt.");
 		// beides einmalig neu importieren und dann umbenennen
 		service.deleteAllPositions();
 		fileToPositions(f1);

@@ -29,7 +29,7 @@ import kurven.Point;
  *         Sonnenstand + Formel = Sollstellung Joy Kommando
  * 
  *
- * 
+ *         Der Regler erhält Position vom Spiegel
  */
 public class Controller implements Runnable {
 
